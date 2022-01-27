@@ -1,4 +1,5 @@
 <?php
+use SpringPHP\Boot;
 $file = null;
 foreach ([ __DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload.php',__DIR__ . '/../vendor/autoload.php' ] as $file) {
     if (file_exists($file)) {
@@ -9,4 +10,8 @@ foreach ([ __DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload
 if(!file_exists($file)){
     die("include composer autoload.php fail\n");
 }
-
+Boot::init();
+defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT',realpath( './'));
+if(file_exists(SPRINGPHP_ROOT.'/bootstrap.php')){
+    require_once SPRINGPHP_ROOT.'/bootstrap.php';
+}
