@@ -11,3 +11,4 @@ vendor
 composer.phar
 composer.lock
 bootstrap.php
+local-config.php

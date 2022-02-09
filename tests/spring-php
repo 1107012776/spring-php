@@ -1,17 +1,25 @@
 <?php
-use SpringPHP\Boot;
+//php composer.phar dump-autoload -o
+ini_set ( "display_errors" , "On" );
+error_reporting (E_ALL);
+ini_set('date.timezone','Asia/Shanghai');
+defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT',realpath( './'));
+
 $file = null;
-foreach ([ __DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload.php',__DIR__ . '/../vendor/autoload.php' ] as $file) {
+foreach ([SPRINGPHP_ROOT . '/../vendor/autoload.php',SPRINGPHP_ROOT . '/../../vendor/autoload.php', SPRINGPHP_ROOT . '/../../../autoload.php',  ] as $file) {
     if (file_exists($file)) {
         require $file;
         break;
     }
 }
+\SpringPHP\Core\SimpleAutoload::init();
+\SpringPHP\Core\SimpleAutoload::add([
+    'App' => 'App'
+]);
 if(!file_exists($file)){
     die("include composer autoload.php fail\n");
 }
-Boot::init();
-defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT',realpath( './'));
 if(file_exists(SPRINGPHP_ROOT.'/bootstrap.php')){
     require_once SPRINGPHP_ROOT.'/bootstrap.php';
 }
+\SpringPHP\Boot::init();
