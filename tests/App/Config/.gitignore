@@ -1,0 +1,17 @@
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+Log
+Temp
+vendor
+composer.phar
+composer.lock
+bootstrap.php
+local-config.php
+composer.phar
+*.py
+update
