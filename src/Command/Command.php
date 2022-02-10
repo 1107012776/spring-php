@@ -1,7 +1,6 @@
 <?php
 namespace SpringPHP\Command;
 
-use mysql_xdevapi\BaseResult;
 use SpringPHP\Boot;
 use SpringPHP\Core\SpringContext;
 
