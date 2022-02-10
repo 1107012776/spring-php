@@ -26,6 +26,10 @@ class Command
                     posix_kill($pid, SIGUSR1);
 //                    posix_kill($pid, SIGUSR2);
                     break;
+                default:
+                    echo "start ".PHP_EOL;
+                    echo "stop ".PHP_EOL;
+                    echo "reload ".PHP_EOL;
             }
         }
     }
