@@ -12,10 +12,6 @@ foreach ([SPRINGPHP_ROOT . '/../vendor/autoload.php',SPRINGPHP_ROOT . '/../../ve
         break;
     }
 }
-\SpringPHP\Core\SimpleAutoload::init();
-\SpringPHP\Core\SimpleAutoload::add([
-    'App' => SPRINGPHP_ROOT.'/App'
-]);
 if(!file_exists($file)){
     die("include composer autoload.php fail\n");
 }

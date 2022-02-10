@@ -64,4 +64,8 @@ class SpringContext
         }
         return $default;
     }
+
+    public static function config($key, $default = ''){
+        return \SpringPHP\Core\SpringContext::$app->getConfig($key, $default);
+    }
 }

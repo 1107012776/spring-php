@@ -1,14 +1,16 @@
 <?php
 use SpringPHP\Server\Server;
+use \SpringPHP\Core\SpringContext;
+
 return [
-    "error_page" => [\App\Controller\Error::class, 'index404'],
+    "error_page" => ['\App\Controller\Error', 'index404'],
     'mode' => SWOOLE_PROCESS,
     'servers' => [
         [
             'name' => 'http',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' =>  \SpringPHP\Core\SpringContext::$app->getConfig('local.servers.0.port'), //7999
+            'port' =>  SpringContext::config('local.servers.0.port'), //7999
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
@@ -33,9 +35,10 @@ return [
         ],
     ],
     'settings' => [
-        'daemonize' => 0,  //为1的时候为守护模式
+        'daemonize' => 1,  //为1的时候为守护模式
         'enable_coroutine' => true,
         'worker_num' => swoole_cpu_num(),
+        'runtime_path' => SPRINGPHP_ROOT . '/runtime',
         'pid_file' => SPRINGPHP_ROOT . '/runtime/spring-php.pid',
         'open_tcp_nodelay' => true,
         'max_coroutine' => 100000,

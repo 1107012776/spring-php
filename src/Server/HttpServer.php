@@ -21,7 +21,7 @@ class HttpServer implements ServerInter
         $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             array(
-                'worker_num' => 2,
+                'worker_num' => SpringContext::config('settings.worker_num',2),
 //                'daemonize' => true,
                 'daemonize' => false,
                 'max_request' => 10000,
@@ -66,9 +66,12 @@ class HttpServer implements ServerInter
         $http->start();
     }
 
+    /**
+     * 每个worker启动的时候
+     */
     public function onWorkerStart()
     {
-        SpringContext::resetConfig();
+        Server::onWorkerStart();
     }
 
     public static function start($host = '0.0.0.0', $port = 7999)

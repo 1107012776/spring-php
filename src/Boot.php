@@ -16,7 +16,19 @@ class Boot
     {
         SpringContext::resetConfig();
         \SpringPHP\Command\Command::parse(function (){
-            static::exec();
+            $daemonize = SpringContext::$app->getConfig('settings.daemonize');
+            if($daemonize == 1){
+                $pid = pcntl_fork();
+                if ($pid > 0) {
+                    exit(0);
+                }elseif($pid == -1){
+                    exit('Daemonize start error'); //守护模式开启失败
+                }else{  //守护模式
+                    static::exec();
+                }
+            }else{
+                static::exec();
+            }
         });
     }
 
@@ -24,6 +36,7 @@ class Boot
      * 执行
      */
     public static function exec(){
+        ignore_user_abort(true);
         $logo = <<<LOGO
 ////////////////////////////////////////////////////////////////////
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
@@ -87,6 +100,7 @@ LOGO;
                 }*/
             }
             echo date('Y-m-d H:i:s', time()).' current parent_pid='.posix_getpid().' exit worker pid='.$pid.PHP_EOL;
+            file_put_contents(SpringContext::config('settings.runtime_path').'/system'.date('Ymd').'.log', date('Y-m-d H:i:s', time()).' current parent_pid='.posix_getpid().' exit worker pid='.$pid . PHP_EOL, FILE_APPEND);
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
             // If a child has already exited. 如果一个孩子已经退出了。
