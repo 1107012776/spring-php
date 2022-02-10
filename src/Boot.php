@@ -14,16 +14,7 @@ class Boot
      */
     public static function init()
     {
-        $localConfigPath = SPRINGPHP_ROOT . "/App/Config/Config-Local.php";
-        if(file_exists($localConfigPath)){
-            $config = include_once($localConfigPath);
-        }else{
-            $config = [];
-        }
-        \SpringPHP\Core\SpringContext::init($config);
-        $configPath = SPRINGPHP_ROOT . "/App/Config/Config.php";
-        $config = include_once($configPath);
-        \SpringPHP\Core\SpringContext::$app->merge($config);
+        SpringContext::resetConfig();
         \SpringPHP\Command\Command::parse(function (){
             static::exec();
         });

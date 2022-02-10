@@ -22,6 +22,20 @@ class SpringContext
         $this->config = array_merge($this->config, $config);
     }
 
+    public static function resetConfig()
+    {
+        $localConfigPath = SPRINGPHP_ROOT . "/App/Config/Config-Local.php";
+        if(file_exists($localConfigPath)){
+            $config = include($localConfigPath);
+        }else{
+            $config = [];
+        }
+        \SpringPHP\Core\SpringContext::init($config);
+        $configPath = SPRINGPHP_ROOT . "/App/Config/Config.php";
+        $config = include($configPath);
+        \SpringPHP\Core\SpringContext::$app->merge($config);
+    }
+
     protected function __construct($config)
     {
         $this->config = $config;
