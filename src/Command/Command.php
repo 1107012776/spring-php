@@ -31,7 +31,6 @@ class Command
                     break;
             }
         }else{
-            var_dump('defaultHelp');
             static::defaultHelp();
         }
     }
