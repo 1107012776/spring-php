@@ -10,7 +10,6 @@ class Command
     public static function parse(callable $func = null)
     {
         global $argv;
-        print_r($argv);
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         $pid = file_get_contents($pid_file);
         if (isset($argv[1])) {
@@ -36,9 +35,10 @@ class Command
     }
 
     public static function defaultHelp(){
-        echo 'start '.PHP_EOL;
-        echo 'stop '.PHP_EOL;
-        echo 'reload '.PHP_EOL;
+        echo 'do you need to execute ?'.PHP_EOL;
+        echo '    start '.PHP_EOL;
+        echo '    stop '.PHP_EOL;
+        echo '    reload '.PHP_EOL;
     }
 
     /**
