@@ -35,7 +35,7 @@ class Command
     }
 
     public static function defaultHelp(){
-        echo 'do you need to execute ?'.PHP_EOL;
+        echo 'Do you need to execute ?'.PHP_EOL;
         echo '    start '.PHP_EOL;
         echo '    stop '.PHP_EOL;
         echo '    reload '.PHP_EOL;
