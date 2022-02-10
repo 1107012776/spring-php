@@ -22,7 +22,7 @@ class Boot
                 if ($pid > 0) {
                     exit(0);
                 }elseif($pid == -1){
-                    exit('Daemonize start error'); //守护模式开启失败
+                    exit('Failed to enable Guardian Mode'); //守护模式开启失败
                 }else{  //守护模式
                     static::exec();
                 }
