@@ -48,7 +48,7 @@ class Command
     {
         declare(ticks=1)
         $signal_handler = function ($signal) {
-            echo "SIGALRM " . $signal . " " . date("Y-m-d H:i:s", time()) . PHP_EOL;
+            echo "signal=" . $signal . " " . date("Y-m-d H:i:s", time()) . PHP_EOL;
             switch ($signal) {
                 case SIGUSR2:
                     foreach (Boot::$workers as $worker_pid => $server) {
