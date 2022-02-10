@@ -17,6 +17,11 @@ class SpringContext
         return static::$app;
     }
 
+    public function merge($config)
+    {
+        $this->config = array_merge($this->config, $config);
+    }
+
     protected function __construct($config)
     {
         $this->config = $config;

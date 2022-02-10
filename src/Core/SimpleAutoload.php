@@ -17,8 +17,6 @@ class SimpleAutoload
             foreach ($val as $k => $v) {
                 $filename = sprintf('%s.php', str_replace($k, $v, $classname));
                 $filename = str_replace('\\', '/', $filename);
-                $dir = SPRINGPHP_ROOT;
-                $filename = $dir . '/' . $filename;
                 if (is_file($filename)) {
                     $fileArr[] = $filename;
                 }

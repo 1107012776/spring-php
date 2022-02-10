@@ -8,7 +8,7 @@ return [
             'name' => 'http',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' => 7999,
+            'port' =>  \SpringPHP\Core\SpringContext::$app->getConfig('local.servers.0.port'), //7999
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
