@@ -3,6 +3,7 @@
 namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
+use SpringPHP\Core\SpringContext;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
 
@@ -67,7 +68,7 @@ class HttpServer implements ServerInter
 
     public function onWorkerStart()
     {
-
+        SpringContext::resetConfig();
     }
 
     public static function start($host = '0.0.0.0', $port = 7999)
