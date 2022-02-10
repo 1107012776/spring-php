@@ -27,11 +27,18 @@ class Command
 //                    posix_kill($pid, SIGUSR2);
                     break;
                 default:
-                    echo "start ".PHP_EOL;
-                    echo "stop ".PHP_EOL;
-                    echo "reload ".PHP_EOL;
+                    static::defaultHelp();
+                    break;
             }
+        }else{
+            static::defaultHelp();
         }
+    }
+
+    public static function defaultHelp(){
+        echo 'start '.PHP_EOL;
+        echo 'stop '.PHP_EOL;
+        echo 'reload '.PHP_EOL;
     }
 
     /**
