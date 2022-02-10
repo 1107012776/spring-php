@@ -14,6 +14,18 @@ class Boot
      */
     public static function init()
     {
+        $configPath = SPRINGPHP_ROOT . "/App/Config/Config.php";
+        $config = include_once($configPath);
+        \SpringPHP\Core\SpringContext::init($config);
+        \SpringPHP\Command\Command::parse(function (){
+            static::exec();
+        });
+    }
+
+    /**
+     * 执行
+     */
+    public static function exec(){
         $logo = <<<LOGO
 ////////////////////////////////////////////////////////////////////
 //                          _ooOoo_                               //
@@ -34,12 +46,11 @@ class Boot
 //                           `=---='                              //
 //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        //
 //                          SpringPHP                             //
+//            https://github.com/1107012776/spring-php            //
 ////////////////////////////////////////////////////////////////////
 LOGO;
         echo $logo . PHP_EOL;
-        $configPath = SPRINGPHP_ROOT . "/App/Config/Config.php";
-        $config = include_once($configPath);
-        \SpringPHP\Core\SpringContext::init($config);
+
         $servers = SpringContext::$app->getConfig('servers');
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         static::$masterPid = posix_getpid();
@@ -64,7 +75,7 @@ LOGO;
                 if ($pid > 0) {
                     self::$workers[(int)$pid] = $server;
                 }else{
-                    @cli_set_process_title('spring-php worker pid=' . posix_getpid());
+                    @cli_set_process_title('spring-php worker pid=' . posix_getpid() .' listen:'.$server['host'].':'.$server['port']);
                     \SpringPHP\Server\HttpServer::start($server['host'], $server['port']);
                 }
                 break;
@@ -85,15 +96,31 @@ LOGO;
             //暂停执行当前进程，直到孩子退出，直到信号被传送
             $status = 0;
             $pid = pcntl_wait($status, WUNTRACED);
+            if(posix_getpid() == static::$masterPid
+               && $pid == -1
+            ){
+           /*     foreach (static::$workers as $worker_pid => $server){
+                    $p = posix_kill($worker_pid, 15);
+                    var_dump($p);
+                }*/
+            }
             echo date('Y-m-d H:i:s', time()).' current parent_pid='.posix_getpid().' exit worker pid='.$pid.PHP_EOL;
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
             // If a child has already exited. 如果一个孩子已经退出了。
             if ($pid > 0) {  //退出一个子进程，则继续开启一个子进程
-                $server = self::$workers[(int)$pid];
+//                $server = self::$workers[(int)$pid];
                 unset(self::$workers[(int)$pid]);
-                static::createOneWorker($server);
-            }if($pid == -1){
+                if(empty(self::$workers)){
+                    exit(0);
+                }
+//                static::createOneWorker($server);
+            }elseif(posix_getpid() == static::$masterPid
+                && $pid == -1){
+                if(empty(self::$workers)){
+                    exit(0);
+                }
+            } elseif($pid == -1){
                 exit(0);
             } else {
                 /* // If shutdown state and all child processes exited then master process exit.
