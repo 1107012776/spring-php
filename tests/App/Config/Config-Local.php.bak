@@ -1,0 +1,10 @@
+<?php
+return [
+    'local' => [
+        'servers' => [
+            [
+                'port' => 7999
+            ]
+        ]
+    ]
+];
