@@ -11,7 +11,7 @@ php spring-php start
 ### 关闭
 php spring-php stop
 
-### 重启worker，热更新
+### 重启worker
 php spring-php reload
   
 
