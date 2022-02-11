@@ -16,13 +16,16 @@ class Command
             $argv[1] = strtolower($argv[1]);
             switch ($argv[1]) {
                 case 'start':
+                    if(\Swoole\Process::kill($pid, PRIO_PROCESS)){
+                        echo 'The current project is running' . PHP_EOL;
+                        exit(0);
+                    }
                     $daemonize = 0;
                     if (isset($argv[2])
                         && $argv[2] == '-d'
                     ) {
                         $daemonize = 1;
                     }
-                    static::signalHandlerRegister(); //信号注册
                     !empty($func) && $func($daemonize);
                     break;
                 case 'stop':

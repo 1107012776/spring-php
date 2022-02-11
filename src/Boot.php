@@ -3,6 +3,7 @@
 namespace SpringPHP;
 
 
+use SpringPHP\Command\Command;
 use SpringPHP\Core\SpringContext;
 
 class Boot
@@ -50,17 +51,17 @@ LOGO;
         $servers = SpringContext::$app->getConfig('servers');
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         static::$masterPid = posix_getpid();
-        @file_put_contents($pid_file, static::$masterPid);
         foreach ($servers as $server) {
             if (static::$masterPid !== posix_getpid()) {
                 exit(0);
             }
-//            var_dump('bianli spring-php worker pid=' . posix_getpid());
             static::createOneWorker($server);
         }
         if (static::$masterPid !== posix_getpid()) {
             exit(0);
         }
+        @file_put_contents($pid_file, static::$masterPid);
+        Command::signalHandlerRegister();  //主进程信号注册
         static::monitorWorkers();
     }
 
@@ -86,7 +87,6 @@ LOGO;
      */
     public static function monitorWorkers()
     {
-//        var_dump(self::$workers,posix_getpid());
         while (1) {
             // Calls signal handlers for pending signals.调用待处理信号的信号处理程序
             pcntl_signal_dispatch();
@@ -94,26 +94,16 @@ LOGO;
             //暂停执行当前进程，直到孩子退出，直到信号被传送
             $status = 0;
             $pid = pcntl_wait($status, WUNTRACED);
-            if (posix_getpid() == static::$masterPid
-                && $pid == -1
-            ) {
-                /*     foreach (static::$workers as $worker_pid => $server){
-                         $p = posix_kill($worker_pid, 15);
-                         var_dump($p);
-                     }*/
-            }
             echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . $pid . PHP_EOL;
             file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . $pid . PHP_EOL, FILE_APPEND);
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
             // If a child has already exited. 如果一个孩子已经退出了。
-            if ($pid > 0) {  //退出一个子进程，则继续开启一个子进程
-//                $server = self::$workers[(int)$pid];
+            if ($pid > 0) {  //退出一个子进程
                 unset(self::$workers[(int)$pid]);
                 if (empty(self::$workers)) {
                     exit(0);
                 }
-//                static::createOneWorker($server);
             } elseif (posix_getpid() == static::$masterPid
                 && $pid == -1) {
                 if (empty(self::$workers)) {

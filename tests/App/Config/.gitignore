@@ -11,7 +11,7 @@ vendor
 composer.phar
 composer.lock
 bootstrap.php
-Config-Local.php
+*-Local.php
 composer.phar
 *.py
 update
