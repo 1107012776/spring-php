@@ -15,9 +15,14 @@ abstract class Controller
      */
     protected $response;
 
-    public function __construct(RequestInter $request, $response)
+
+    public function init(RequestInter $request, $response)
     {
         $this->request = $request;
         $this->response = $response;
+    }
+
+    public function responseCode($code = 200){
+        $this->response->setStatusCode($code);
     }
 }

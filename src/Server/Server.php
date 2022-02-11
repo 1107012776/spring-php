@@ -7,6 +7,7 @@ use SpringPHP\Core\SpringContext;
 class Server
 {
     const SERVER_HTTP = 1;
+
     public static function onWorkerStart()
     {
         SpringContext::resetConfig();

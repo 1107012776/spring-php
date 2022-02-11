@@ -57,24 +57,36 @@ class Dispatcher
         $controller = $this->controller = !empty($arr[1]) ? $arr[1] : 'Index';
         $action = $this->action = !empty($arr[2]) ? $arr[2] : 'index';
         $fix = '\App\Controller\\';
+        $this->response->setHeader('Content-Type', 'text/html;charset=UTF-8');
         if (!empty($controller) && !empty($action)) {
             $controllerClass = $fix . $controller;
-            class_exists($controllerClass) && $obj = new $controllerClass($this->request, $this->response);
+            class_exists($controllerClass) && $obj = new $controllerClass();
             if (empty($obj) || !method_exists($obj, $action)) {
                 $this->response->setStatusCode(404);
                 $errorPageArr = SpringContext::$app->getConfig('error_page');
-                if (class_exists($errorPageArr[0])) {
+                if (!empty($errorPageArr[0]) && class_exists($errorPageArr[0])) {
                     $controllerClass = $errorPageArr[0];
-                    $obj = new $controllerClass($this->request, $this->response);
-                    $action = $errorPageArr[1];
+                    $obj = new $controllerClass();
+                    $action = isset($errorPageArr[1]) ? $errorPageArr[1]:'';
+                    if(empty($action) || !method_exists($obj, $action)){
+                        echo '404';
+                        return;
+                    }
                 } else {
                     echo '404';
                     return;
                 }
             }
+            /**
+             * @var Controller $obj
+             */
+            $obj->init($this->request, $this->response);
             $response = $obj->$action();
             if (is_string($response)) {
                 echo $response;
+            } elseif (is_array($response)) {
+                $this->response->setHeader('Content-Type', 'application/json;charset=UTF-8');
+                echo json_encode($response, JSON_UNESCAPED_UNICODE);
             }
         }
     }

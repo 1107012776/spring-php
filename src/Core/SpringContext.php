@@ -25,9 +25,9 @@ class SpringContext
     public static function resetConfig()
     {
         $localConfigPath = SPRINGPHP_ROOT . "/App/Config/Config-Local.php";
-        if(file_exists($localConfigPath)){
+        if (file_exists($localConfigPath)) {
             $config = include($localConfigPath);
-        }else{
+        } else {
             $config = [];
         }
         \SpringPHP\Core\SpringContext::init($config);
@@ -65,7 +65,8 @@ class SpringContext
         return $default;
     }
 
-    public static function config($key, $default = ''){
+    public static function config($key, $default = '')
+    {
         return \SpringPHP\Core\SpringContext::$app->getConfig($key, $default);
     }
 }

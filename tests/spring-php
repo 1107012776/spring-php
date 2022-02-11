@@ -1,21 +1,21 @@
 <?php
 //php composer.phar dump-autoload -o
-ini_set ( "display_errors" , "On" );
-error_reporting (E_ALL);
-ini_set('date.timezone','Asia/Shanghai');
-defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT',realpath( './'));
+ini_set("display_errors", "On");
+error_reporting(E_ALL);
+ini_set('date.timezone', 'Asia/Shanghai');
+defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT', realpath(__DIR__));
 
 $file = null;
-foreach ([SPRINGPHP_ROOT . '/../vendor/autoload.php',SPRINGPHP_ROOT . '/../../vendor/autoload.php', SPRINGPHP_ROOT . '/../../../autoload.php',  ] as $file) {
+foreach ([SPRINGPHP_ROOT . '/../vendor/autoload.php', SPRINGPHP_ROOT . '/../../vendor/autoload.php', SPRINGPHP_ROOT . '/../../../autoload.php',] as $file) {
     if (file_exists($file)) {
         require $file;
         break;
     }
 }
-if(!file_exists($file)){
+if (!file_exists($file)) {
     die("include composer autoload.php fail\n");
 }
-if(file_exists(SPRINGPHP_ROOT.'/bootstrap.php')){
-    require_once SPRINGPHP_ROOT.'/bootstrap.php';
+if (file_exists(SPRINGPHP_ROOT . '/bootstrap.php')) {
+    require_once SPRINGPHP_ROOT . '/bootstrap.php';
 }
 \SpringPHP\Boot::init();

@@ -21,7 +21,7 @@ class HttpServer implements ServerInter
         $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             array(
-                'worker_num' => SpringContext::config('settings.worker_num',2),
+                'worker_num' => SpringContext::config('settings.worker_num', 2),
 //                'daemonize' => true,
                 'daemonize' => false,
                 'max_request' => 10000,
