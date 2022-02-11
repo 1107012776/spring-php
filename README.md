@@ -6,8 +6,9 @@ SpringPHP是一款基于Swoole的高性能框架
 
 # 示例（tests目录）
 ### 启动
-php spring-php start  
-
+```bash
+php spring-php start   //守护模式需要在start后面加 -d
+```
 ```
 
 ////////////////////////////////////////////////////////////////////
@@ -19,10 +20,14 @@ php spring-php start
 ```
 
 ### 关闭
+```bash
 php spring-php stop
+```
 
 ### 重启worker
+```bash
 php spring-php reload
+```
 
 
   
