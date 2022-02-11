@@ -1,5 +1,7 @@
 {
     "name":"lys/spring-php",
+    "description": "SpringPHP是一款基于Swoole的高性能框架",
+    "keywords": ["SpringPHP", "spring-php", "PHP框架", "Swoole"],
     "license": "Apache-2.0",
     "authors": [
         {
