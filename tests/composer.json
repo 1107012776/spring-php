@@ -1,7 +1,7 @@
 {
     "require": {
         "php": ">=7.2",
-        "lys/spring-php": ">=0.0.0"
+        "lys/spring-php": "dev-main"
     },
     "autoload": {
         "psr-4": {
