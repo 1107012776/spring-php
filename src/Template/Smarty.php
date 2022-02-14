@@ -3,6 +3,8 @@ namespace SpringPHP\Template;
 
 
 
+use SpringPHP\Inter\RenderInterface;
+
 class Smarty implements RenderInterface
 {
 
