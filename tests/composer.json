@@ -1,9 +1,7 @@
 {
     "require": {
         "php": ">=7.2",
-        "lys/spring-php": ">=0.0.0",
-        "lys/php-sharding-pdo": "^9.10",
-        "phpunit/phpunit": "^8.5"
+        "lys/spring-php": ">=0.0.0"
     },
     "autoload": {
         "psr-4": {
