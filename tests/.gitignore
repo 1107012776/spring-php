@@ -1,0 +1,15 @@
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+Log
+Temp
+
+composer.phar
+composer.lock
+bootstrap.php
+Config-Local.php
+unit
