@@ -67,8 +67,8 @@ class Dispatcher
                 if (!empty($errorPageArr[0]) && class_exists($errorPageArr[0])) {
                     $controllerClass = $errorPageArr[0];
                     $obj = new $controllerClass();
-                    $action = isset($errorPageArr[1]) ? $errorPageArr[1]:'';
-                    if(empty($action) || !method_exists($obj, $action)){
+                    $action = isset($errorPageArr[1]) ? $errorPageArr[1] : '';
+                    if (empty($action) || !method_exists($obj, $action)) {
                         echo '404';
                         return;
                     }

@@ -22,7 +22,8 @@ abstract class Controller
         $this->response = $response;
     }
 
-    public function responseCode($code = 200){
+    public function responseCode($code = 200)
+    {
         $this->response->setStatusCode($code);
     }
 }

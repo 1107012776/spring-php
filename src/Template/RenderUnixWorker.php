@@ -3,11 +3,10 @@
 namespace SpringPHP\Template;
 
 
-
-
 class RenderUnixWorker
 {
-    public  $id;
+    public $id;
+
     public function __construct($id = 65501)
     {
         set_time_limit(0);
@@ -36,14 +35,14 @@ class RenderUnixWorker
     {
         @cli_set_process_title('spring-php RenderWorker unix master process pid=' . posix_getpid());
 
-        $socket = new  \Swoole\Coroutine\Socket(AF_UNIX,SOCK_STREAM,0);
-        $socket->bind("/tmp/spring-php-server-".$this->id.".sock");
+        $socket = new  \Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
+        $socket->bind("/tmp/spring-php-server-" . $this->id . ".sock");
         $socket->listen(2048);
         @cli_set_process_title('spring-php RenderWorker unix worker pid=' . posix_getpid());
         go(function () use ($socket) {
             while (1) {
                 $client = $socket->accept(-1);
-                if(!$client){
+                if (!$client) {
                     return;
                 }
                 $this->accept($client);

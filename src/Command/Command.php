@@ -15,7 +15,7 @@ class Command
         if (isset($argv[1])) {
             switch ($argv[1]) {
                 case 'start':
-                    if(\Swoole\Process::kill($pid, PRIO_PROCESS)){
+                    if (\Swoole\Process::kill($pid, PRIO_PROCESS)) {
                         echo 'The current project is running' . PHP_EOL;
                         exit(0);
                     }

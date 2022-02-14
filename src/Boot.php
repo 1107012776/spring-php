@@ -21,7 +21,7 @@ class Boot
         SpringContext::resetConfig();
         \SpringPHP\Command\Command::parse(function ($daemonize = 0) {
             if ($daemonize == 1) { // //守护模式开启
-                $process = new \Swoole\Process(function(\Swoole\Process $worker) {
+                $process = new \Swoole\Process(function (\Swoole\Process $worker) {
                     static::exec();
                 });
 
@@ -70,8 +70,9 @@ LOGO;
         static::monitorWorkers();
     }
 
-    protected static function swooleCreateOneWorker($server){
-        $process = new \Swoole\Process(function(\Swoole\Process $worker)  use($server){
+    protected static function swooleCreateOneWorker($server)
+    {
+        $process = new \Swoole\Process(function (\Swoole\Process $worker) use ($server) {
             switch ($server['type']) {
                 case \SpringPHP\Server\Server::SERVER_HTTP:
                     \SpringPHP\Server\HttpServer::start($server['host'], $server['port']);

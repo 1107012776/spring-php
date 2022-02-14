@@ -44,11 +44,11 @@ class HttpServer implements ServerInter
 
         $http->on('workerStart', array($this, 'onWorkerStart'));
 
-        $http->on('start', function ($serv){
+        $http->on('start', function ($serv) {
             swoole_set_process_name('spring-php.Manager');
         });
 
-        $http->on('request', function ($request, $response) use($http) {
+        $http->on('request', function ($request, $response) use ($http) {
             $serv = $http;
             if (isset($request->server)) {
                 $this->server = $request->server;
@@ -83,14 +83,14 @@ class HttpServer implements ServerInter
 
         //处理异步任务(此回调函数在task进程中执行)
         $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
-            echo "New AsyncTask[id={$task_id}]".PHP_EOL;
+            echo "New AsyncTask[id={$task_id}]" . PHP_EOL;
             //返回任务执行的结果
             $serv->finish("{$data} -> OK");
         });
 
 //处理异步任务的结果(此回调函数在worker进程中执行)
         $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
-            echo "AsyncTask[{$task_id}] Finish: {$data}".PHP_EOL;
+            echo "AsyncTask[{$task_id}] Finish: {$data}" . PHP_EOL;
         });
         Render::getInstance()->attachServer($http, $port);
 
@@ -107,7 +107,7 @@ class HttpServer implements ServerInter
         if ($worker_id >= $serv->setting['worker_num']) {
             swoole_set_process_name("spring-php.task.{$worker_id}");
         } else {
-            swoole_set_process_name("spring-php.worker.{$worker_id} listen:".$this->host.':'.$this->port);
+            swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
         }
     }
 
