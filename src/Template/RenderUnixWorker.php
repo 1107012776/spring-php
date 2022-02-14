@@ -46,13 +46,13 @@ class RenderUnixWorker
                 if(!$client){
                     return;
                 }
-                $this->forkOneWorker($client);
+                $this->accept($client);
             }
         });
         \Swoole\Event::wait();
     }
 
-    public function forkOneWorker(\Swoole\Coroutine\Socket $socket)
+    public function accept(\Swoole\Coroutine\Socket $socket)
     {
         $header = $socket->recvAll(4, 1);
         if (strlen($header) != 4) {
