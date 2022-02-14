@@ -1,9 +1,6 @@
 # SpringPHP - 高性能 Swoole 框架
 SpringPHP是一款基于Swoole的高性能框架
 
-# 说明
-还在开发中...
-
 # 安装
 composer require lys/spring-php
 
