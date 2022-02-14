@@ -38,6 +38,7 @@ class HttpServer implements ServerInter
                 'buffer_output_size' => SpringContext::config('settings.buffer_output_size', 15 * 1024 * 1024),
                 'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
                 'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
+                'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
             ]
         );
 
@@ -47,7 +48,8 @@ class HttpServer implements ServerInter
             swoole_set_process_name('spring-php.Manager');
         });
 
-        $http->on('request', function ($request, $response) {
+        $http->on('request', function ($request, $response) use($http) {
+            $serv = $http;
             if (isset($request->server)) {
                 $this->server = $request->server;
             }
@@ -65,7 +67,7 @@ class HttpServer implements ServerInter
 
             ob_start();
             try {
-                Dispatcher::init(new RequestHttp($request), $response);
+                Dispatcher::init(new RequestHttp($request, $serv), $response);
             } catch (\Exception $e) {
                 var_dump($e);
             }
@@ -78,6 +80,18 @@ class HttpServer implements ServerInter
             // set status
             $response->end($result);
         });
+
+        //处理异步任务(此回调函数在task进程中执行)
+        $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
+            echo "New AsyncTask[id={$task_id}]".PHP_EOL;
+            //返回任务执行的结果
+            $serv->finish("{$data} -> OK");
+        });
+
+//处理异步任务的结果(此回调函数在worker进程中执行)
+        $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
+            echo "AsyncTask[{$task_id}] Finish: {$data}".PHP_EOL;
+        });
         Render::getInstance()->attachServer($http, $port);
 
         $http->start();
@@ -85,12 +99,13 @@ class HttpServer implements ServerInter
 
     /**
      * 每个worker启动的时候
+     * @param \Swoole\Http\Server $serv
      */
-    public function onWorkerStart($serv, $worker_id)
+    public function onWorkerStart(\Swoole\Http\Server $serv, $worker_id)
     {
         Server::onWorkerStart();
         if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id} listen:".$this->host.':'.$this->port);
+            swoole_set_process_name("spring-php.task.{$worker_id}");
         } else {
             swoole_set_process_name("spring-php.worker.{$worker_id} listen:".$this->host.':'.$this->port);
         }

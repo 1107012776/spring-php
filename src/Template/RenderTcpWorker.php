@@ -24,7 +24,6 @@ class RenderTcpWorker
         $this->ip = $ip;
         $this->port = $port;
 
-        echo "\nServer init sucess\n";
     }
 
 

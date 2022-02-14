@@ -16,6 +16,8 @@ class Index extends Controller
 
     public function haha()
     {
-        return ['msg' => 'hello12'];
+        //投递异步任务
+        $task_id = $this->request->getServer()->task("task");
+        return ['msg' => 'hello12','task_id' => $task_id];
     }
 }

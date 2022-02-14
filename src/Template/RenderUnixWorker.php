@@ -12,7 +12,6 @@ class RenderUnixWorker
     {
         set_time_limit(0);
         $this->id = $id;
-        echo "\nServer init sucess\n";
     }
 
     /**
