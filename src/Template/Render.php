@@ -31,12 +31,16 @@ class Render
 
     function render($template = '', $data = [],$options = [])
     {
+        if(empty($this->renderWorker)){
+            return '';
+        }
+        $processEnd = end($this->renderWorker);
         /*
          * 随机找一个进程
          */
         mt_srand();
         $id = mt_rand(1, $this->count);
-        if(SpringContext::config('template.socketType',Render::SOCKET_UNIX) == Render::SOCKET_UNIX){
+        if($processEnd['socketType'] == Render::SOCKET_UNIX){
             $res = $this->unixRender($id, [
                 'template' => $template,
                 'data' => $data,
@@ -104,8 +108,9 @@ class Render
             $process->name('RenderWorker');
             $this->renderWorker[$i] = [
                 'pid' => $process->pid,
+                'socketType' => SpringContext::config('template.socketType',Render::SOCKET_UNIX),
                 'ip' => $ip,
-                'port' => $port + $i,
+                'id' => $port + $i,
             ];
             $array[$i] = $process;
         }

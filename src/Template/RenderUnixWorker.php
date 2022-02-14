@@ -7,27 +7,13 @@ namespace SpringPHP\Template;
 
 class RenderUnixWorker
 {
-    /**
-     * @var RenderTcpWorker
-     */
-    public static $master_worker;  //主进程
-    public static $master_socket;  //监听的socket端口套节字 resource
     public  $id;
-
-    /**
-     * 所有socket套接字数组
-     * @var array
-     */
-    public static $allSockets = [];
-
-
     public function __construct($id = 65501)
     {
         set_time_limit(0);
         $this->id = $id;
         echo "\nServer init sucess\n";
     }
-
 
     /**
      * [读取get或post请求中的url，返回相应的文件]
@@ -67,13 +53,6 @@ class RenderUnixWorker
         \Swoole\Event::wait();
     }
 
-    public function closeSocket($socket)
-    {
-        echo 'exit one socket ' . (int)$socket . "\r\n";
-        unset(self::$allSockets[(int)$socket]);
-        fclose($socket);
-    }
-
     public function forkOneWorker(\Swoole\Coroutine\Socket $socket)
     {
         $header = $socket->recvAll(4, 1);
@@ -88,7 +67,7 @@ class RenderUnixWorker
             try {
                 $reply = $this->request($data);
             } catch (\Throwable $throwable) {
-                var_dump($throwable);
+                $reply = var_export($throwable, true);
             } finally {
                 $socket->sendAll($reply);
                 $socket->close();
@@ -97,9 +76,9 @@ class RenderUnixWorker
         $socket->close();
     }
 
-    public static function start($port = 65501)
+    public static function start($id = 65501)
     {
-        $server = new static($port);
+        $server = new static($id);
         $server->run();
     }
 }
