@@ -16,6 +16,8 @@ class RenderTcpWorker
      * @var array
      */
     public static $allSockets = [];
+    protected $ip = '0.0.0.0';
+    protected $port = 50000;
 
 
     public function __construct($ip = "0.0.0.0", $port = 65501)
@@ -55,8 +57,7 @@ class RenderTcpWorker
         }
         stream_set_blocking(self::$master_socket, 0); //设置为非阻塞
         self::$allSockets[(int)self::$master_socket] = self::$master_socket;
-        $this->forkOneWorker();
-
+        $this->startWorker();
     }
 
     public function closeSocket($socket)
@@ -66,7 +67,7 @@ class RenderTcpWorker
         fclose($socket);
     }
 
-    public function forkOneWorker()
+    public function startWorker()
     {
 
         @cli_set_process_title('spring-php RenderWorker worker pid=' . posix_getpid() . ' listen:' . $this->ip . ":" . $this->port);
