@@ -6,7 +6,7 @@ ini_set('date.timezone', 'Asia/Shanghai');
 defined('SPRINGPHP_ROOT') or define('SPRINGPHP_ROOT', realpath(__DIR__));
 
 $file = null;
-foreach ([SPRINGPHP_ROOT . '/../vendor/autoload.php', SPRINGPHP_ROOT . '/../../vendor/autoload.php', SPRINGPHP_ROOT . '/../../../autoload.php',] as $file) {
+foreach ([SPRINGPHP_ROOT . '/vendor/autoload.php', SPRINGPHP_ROOT . '/../vendor/autoload.php'] as $file) {
     if (file_exists($file)) {
         require $file;
         break;
