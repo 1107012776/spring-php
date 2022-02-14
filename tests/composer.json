@@ -1,7 +1,7 @@
 {
     "require": {
         "php": ">=7.2",
-        "lys/spring-php": "dev-main",
+        "lys/spring-php": "^0.0",
         "smarty/smarty": "^4.1"
     },
     "autoload": {
