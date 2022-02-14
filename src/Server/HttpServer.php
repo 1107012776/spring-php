@@ -6,7 +6,9 @@ use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
+use SpringPHP\Template\Render;
 
+//https://www.kancloud.cn/yiyanan/swoole/980197
 class HttpServer implements ServerInter
 {
 
@@ -15,9 +17,13 @@ class HttpServer implements ServerInter
     public $post;
     public $header;
     public $server;
+    public $port;
+    public $host;
 
     public function __construct($host = '0.0.0.0', $port = 7999)
     {
+        $this->host = $host;
+        $this->port = $port;
         $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             [
@@ -35,7 +41,11 @@ class HttpServer implements ServerInter
             ]
         );
 
-        $http->on('WorkerStart', array($this, 'onWorkerStart'));
+        $http->on('workerStart', array($this, 'onWorkerStart'));
+
+        $http->on('start', function ($serv){
+            swoole_set_process_name('spring-php.Manager');
+        });
 
         $http->on('request', function ($request, $response) {
             if (isset($request->server)) {
@@ -68,6 +78,7 @@ class HttpServer implements ServerInter
             // set status
             $response->end($result);
         });
+        Render::getInstance()->attachServer($http, $port);
 
         $http->start();
     }
@@ -75,9 +86,14 @@ class HttpServer implements ServerInter
     /**
      * 每个worker启动的时候
      */
-    public function onWorkerStart()
+    public function onWorkerStart($serv, $worker_id)
     {
         Server::onWorkerStart();
+        if ($worker_id >= $serv->setting['worker_num']) {
+            swoole_set_process_name("spring-php.task.{$worker_id} listen:".$this->host.':'.$this->port);
+        } else {
+            swoole_set_process_name("spring-php.worker.{$worker_id} listen:".$this->host.':'.$this->port);
+        }
     }
 
     public static function start($host = '0.0.0.0', $port = 7999)

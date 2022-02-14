@@ -6,6 +6,8 @@ namespace SpringPHP;
 use SpringPHP\Command\Command;
 use SpringPHP\Core\SpringContext;
 
+//swoole_process::wait
+//https://www.kancloud.cn/fage/swoole_extension/691402
 class Boot
 {
     public static $workers;
@@ -19,13 +21,15 @@ class Boot
         SpringContext::resetConfig();
         \SpringPHP\Command\Command::parse(function ($daemonize = 0) {
             if ($daemonize == 1) { // //守护模式开启
-                $pid = pcntl_fork();
+                $process = new \Swoole\Process(function(\Swoole\Process $worker) {
+                    static::exec();
+                });
+
+                $pid = $process->start();
                 if ($pid > 0) {
                     exit(0);
                 } elseif ($pid == -1) {
                     exit('Failed to enable Guardian Mode'); //守护模式开启失败
-                } else {  //守护模式
-                    static::exec();
                 }
             } else {
                 static::exec();
@@ -55,30 +59,30 @@ LOGO;
             if (static::$masterPid !== posix_getpid()) {
                 exit(0);
             }
-            static::createOneWorker($server);
+            static::swooleCreateOneWorker($server);
         }
         if (static::$masterPid !== posix_getpid()) {
             exit(0);
         }
+        @cli_set_process_title('spring-php');
         @file_put_contents($pid_file, static::$masterPid);
         Command::signalHandlerRegister();  //主进程信号注册
         static::monitorWorkers();
     }
 
-    protected static function createOneWorker($server)
-    {
-        switch ($server['type']) {
-            case \SpringPHP\Server\Server::SERVER_HTTP:
-                $pid = pcntl_fork();
-                if ($pid > 0) {
-                    self::$workers[(int)$pid] = $server;
-                } else {
-                    @cli_set_process_title('spring-php worker pid=' . posix_getpid() . ' listen:' . $server['host'] . ':' . $server['port']);
+    protected static function swooleCreateOneWorker($server){
+        $process = new \Swoole\Process(function(\Swoole\Process $worker)  use($server){
+            switch ($server['type']) {
+                case \SpringPHP\Server\Server::SERVER_HTTP:
                     \SpringPHP\Server\HttpServer::start($server['host'], $server['port']);
-                }
-                break;
-        }
+                    break;
+            }
+        });
+        $process->name('spring-php listen:' . $server['host'] . ':' . $server['port']);
+        $pid = $process->start();
+        self::$workers[(int)$pid] = $server;
     }
+
 
     /**
      * Monitor all child processes.
@@ -92,24 +96,24 @@ LOGO;
             pcntl_signal_dispatch();
             // Suspends execution of the current process until a child has exited, or until a signal is delivered
             //暂停执行当前进程，直到孩子退出，直到信号被传送
-            $status = 0;
-            $pid = pcntl_wait($status, WUNTRACED);
-            echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . $pid . PHP_EOL;
-            file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . $pid . PHP_EOL, FILE_APPEND);
+            $res = \Swoole\Process::wait(true);
+            //array('code' => 0, 'pid' => 15001)
+            echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL;
+            file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL, FILE_APPEND);
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
             // If a child has already exited. 如果一个孩子已经退出了。
-            if ($pid > 0) {  //退出一个子进程
-                unset(self::$workers[(int)$pid]);
+            if (!empty($res['pid']) && $res['pid'] > 0) {  //退出一个子进程
+                unset(self::$workers[(int)$res['pid']]);
                 if (empty(self::$workers)) {
                     exit(0);
                 }
             } elseif (posix_getpid() == static::$masterPid
-                && $pid == -1) {
+                && empty($res)) {
                 if (empty(self::$workers)) {
                     exit(0);
                 }
-            } elseif ($pid == -1) {
+            } elseif (empty($res)) {
                 exit(0);
             } else {
                 /* // If shutdown state and all child processes exited then master process exit.

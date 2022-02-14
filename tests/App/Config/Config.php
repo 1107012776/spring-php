@@ -2,6 +2,7 @@
 
 use SpringPHP\Server\Server;
 use SpringPHP\Core\SpringContext;
+use SpringPHP\Template\Render;
 
 return [
     "error_page" => [\App\Controller\Error::class, 'index404'],
@@ -20,7 +21,7 @@ return [
             'name' => 'http',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' => 7998,
+            'port' => 8098,
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
@@ -29,7 +30,7 @@ return [
             'name' => 'http',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' => 7997,
+            'port' => 8297,
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
@@ -52,4 +53,7 @@ return [
         // 因为 `Task` 主要处理无法协程化的方法，所以这里推荐设为 `false`，避免协程下出现数据混淆的情况
         'task_enable_coroutine' => false,
     ],
+    'template' => [ //模板类型
+        'socketType' => Render::SOCKET_UNIX
+    ]
 ];

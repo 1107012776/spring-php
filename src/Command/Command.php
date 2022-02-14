@@ -13,7 +13,6 @@ class Command
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         $pid = file_get_contents($pid_file);
         if (isset($argv[1])) {
-            $argv[1] = strtolower($argv[1]);
             switch ($argv[1]) {
                 case 'start':
                     if(\Swoole\Process::kill($pid, PRIO_PROCESS)){
