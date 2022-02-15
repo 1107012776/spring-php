@@ -6,42 +6,30 @@ use SpringPHP\Template\Render;
 
 return [
     "error_page" => [\App\Controller\Error::class, 'index404'],
-    'mode' => SWOOLE_PROCESS,
     'servers' => [
         [
             'module_name' => 'Test',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => SpringContext::config('local.servers.0.port'), //7999
-            'sock_type' => SWOOLE_SOCK_TCP,
-            'callbacks' => [
-            ],
             'template' => [ //视图渲染配置
                 'socketType' => Render::SOCKET_UNIX,
                 'open' => true
             ]
         ],
         [
-
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => 8098,
-            'sock_type' => SWOOLE_SOCK_TCP,
-            'callbacks' => [
-            ],
             'template' => [ //视图渲染配置
                 'socketType' => Render::SOCKET_TCP,
                 'open' => true
             ]
         ],
         [
-
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => 8297,
-            'sock_type' => SWOOLE_SOCK_TCP,
-            'callbacks' => [
-            ],
             'template' => [ //视图渲染配置
                 'socketType' => Render::SOCKET_TCP,
                 'open' => true
