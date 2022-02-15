@@ -70,7 +70,7 @@ class RenderUnixWorker
                 $socket->sendAll($reply);
                 $socket->close();
             }
-        }else{
+        } else {
             $socket->close();
         }
     }

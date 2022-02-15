@@ -39,8 +39,8 @@ class HttpServer implements ServerInter
                 'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
                 'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
                 'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
-                'enable_static_handler'=> SpringContext::config('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
-                'document_root'=> SpringContext::config('settings.document_root', '')  //静态资源根目录
+                'enable_static_handler' => SpringContext::config('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
+                'document_root' => SpringContext::config('settings.document_root', '')  //静态资源根目录
             ]
         );
 
@@ -54,7 +54,7 @@ class HttpServer implements ServerInter
             try {
                 $result = Dispatcher::init(new RequestHttp($request, $http), $response);
             } catch (\Exception $e) {
-                echo var_export($e, true).PHP_EOL;
+                echo var_export($e, true) . PHP_EOL;
             }
             $response->end($result);
         });
@@ -62,14 +62,14 @@ class HttpServer implements ServerInter
         //处理异步任务(此回调函数在task进程中执行)
         $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
             echo "New AsyncTask[id={$task_id}]" . PHP_EOL;
-            $obj = is_object($data) ? $data:unserialize($data);
-            if(is_object($obj) && $obj instanceof TaskInter){
-                try{
+            $obj = is_object($data) ? $data : unserialize($data);
+            if (is_object($obj) && $obj instanceof TaskInter) {
+                try {
                     $obj->before($task_id);
                     $obj->run($task_id);
                     $obj->after($task_id);
-                }catch (\Exception $e){
-                    $obj->onException($e,[
+                } catch (\Exception $e) {
+                    $obj->onException($e, [
                         'serv' => $serv,
                         'task_id' => $task_id,
                         'reactor_id' => $reactor_id,
@@ -84,11 +84,11 @@ class HttpServer implements ServerInter
         $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
             echo "AsyncTask[{$task_id}] Finish start: {$data}" . PHP_EOL;
             $obj = unserialize($data);
-            if(is_object($obj) && $obj instanceof TaskInter){
-                try{
+            if (is_object($obj) && $obj instanceof TaskInter) {
+                try {
                     $obj->finish($task_id);
-                }catch (\Exception $e){
-                    $obj->onException($e,[
+                } catch (\Exception $e) {
+                    $obj->onException($e, [
                         'serv' => $serv,
                         'task_id' => $task_id,
                         'data' => $data,
@@ -110,7 +110,7 @@ class HttpServer implements ServerInter
     {
         Server::onWorkerStart();
         if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id} pid=".getmypid());
+            swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
         } else {
             swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
         }
