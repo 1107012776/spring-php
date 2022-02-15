@@ -84,7 +84,7 @@ class Render
 
     protected function __generateWorkerProcess($config = []): array
     {
-        $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socketType', Render::SOCKET_UNIX);
+        $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socket_type', Render::SOCKET_UNIX);
         $array = [];
         $ip = "0.0.0.0";
         $port = $this->port;

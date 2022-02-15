@@ -13,7 +13,7 @@ return [
             'host' => '0.0.0.0',
             'port' => SpringContext::config('local.servers.0.port'), //7999
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_UNIX,
+                'socket_type' => Render::SOCKET_UNIX,
                 'open' => true
             ]
         ],
@@ -22,7 +22,7 @@ return [
             'host' => '0.0.0.0',
             'port' => 8098,
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_TCP,
+                'socket_type' => Render::SOCKET_TCP,
                 'open' => true
             ]
         ],
@@ -31,7 +31,7 @@ return [
             'host' => '0.0.0.0',
             'port' => 8297,
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_TCP,
+                'socket_type' => Render::SOCKET_TCP,
                 'open' => true
             ]
         ],
