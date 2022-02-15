@@ -70,8 +70,9 @@ class RenderUnixWorker
                 $socket->sendAll($reply);
                 $socket->close();
             }
+        }else{
+            $socket->close();
         }
-        $socket->close();
     }
 
     public static function start($id = 65501)
