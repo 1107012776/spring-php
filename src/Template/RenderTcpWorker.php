@@ -18,13 +18,15 @@ class RenderTcpWorker
     public static $allSockets = [];
     protected $ip = '0.0.0.0';
     protected $port = 50000;
+    protected $swoole_process;
 
 
-    public function __construct($ip = "0.0.0.0", $port = 65501)
+    public function __construct($ip = "0.0.0.0", $port = 65501, \Swoole\Process $swoole_process = null)
     {
         set_time_limit(0);
         $this->ip = $ip;
         $this->port = $port;
+        $this->swoole_process = $swoole_process;
 
     }
 
@@ -39,6 +41,15 @@ class RenderTcpWorker
     public function request($string)
     {
         $tpl = unserialize($string);
+        if (isset($tpl['cmd'])
+            && $tpl['cmd'] == 'restart'
+        ) {
+            foreach (static::$allSockets as $index => $socket) {
+                fclose($socket);
+                unset(static::$allSockets[$index]);
+            }
+            $this->swoole_process->exit(0);
+        }
         $smarty = new  Smarty();
         return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
     }
@@ -69,9 +80,11 @@ class RenderTcpWorker
 
     public function startWorker()
     {
-
         @cli_set_process_title('spring-php RenderWorker worker pid=' . posix_getpid() . ' listen:' . $this->ip . ":" . $this->port);
         while (1) {
+            if (empty(self::$allSockets)) {
+                break;
+            }
             $write = $except = null;
             $read = self::$allSockets;
             echo 'blocking pid=' . posix_getpid() . "\r\n";
@@ -103,9 +116,9 @@ class RenderTcpWorker
 
     }
 
-    public static function start($ip = "0.0.0.0", $port = 65501)
+    public static function start($ip = "0.0.0.0", $port = 65501, \Swoole\Process $process)
     {
-        $server = new static($ip, $port);
+        $server = new static($ip, $port, $process);
         $server->run();
     }
 }

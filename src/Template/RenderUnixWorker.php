@@ -3,14 +3,18 @@
 namespace SpringPHP\Template;
 
 
+use Swoole\Coroutine;
+
 class RenderUnixWorker
 {
     public $id;
+    protected $swoole_process;
 
-    public function __construct($id = 65501)
+    public function __construct($id = 65501, \Swoole\Process $swoole_process = null)
     {
         set_time_limit(0);
         $this->id = $id;
+        $this->swoole_process = $swoole_process;
     }
 
     /**
@@ -23,6 +27,15 @@ class RenderUnixWorker
     public function request($string)
     {
         $tpl = unserialize($string);
+        if (isset($tpl['cmd'])
+            && $tpl['cmd'] == 'restart'
+        ) {
+            Coroutine::create(function () {
+                Coroutine::sleep(0.001);
+                $this->swoole_process->exit(0);
+            });
+            return '';
+        }
         $smarty = new  Smarty();
         return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
     }
@@ -75,9 +88,9 @@ class RenderUnixWorker
         }
     }
 
-    public static function start($id = 65501)
+    public static function start($id = 65501, \Swoole\Process $process)
     {
-        $server = new static($id);
+        $server = new static($id, $process);
         $server->run();
     }
 }

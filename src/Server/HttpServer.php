@@ -19,11 +19,16 @@ class HttpServer implements ServerInter
     public $server;
     public $port;
     public $host;
+    public $config;
+    protected $swoole_process;
 
-    public function __construct($host = '0.0.0.0', $port = 7999)
+    public function __construct($config = [])
     {
-        $this->host = $host;
-        $this->port = $port;
+        $this->swoole_process = $config['process'];
+        unset($config['process']);
+        $this->config = $config;
+        $host = $this->host = $config['host'];
+        $port = $this->port = $config['port'];
         $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             [
@@ -98,7 +103,7 @@ class HttpServer implements ServerInter
             $data = serialize($obj);
             echo "AsyncTask[{$task_id}] Finish end: {$data}" . PHP_EOL;
         });
-        Render::getInstance()->attachServer($http, $port);
+        Render::getInstance()->attachServer($http, $port, $config);
         $http->start();
     }
 
@@ -116,8 +121,8 @@ class HttpServer implements ServerInter
         }
     }
 
-    public static function start($host = '0.0.0.0', $port = 7999)
+    public static function start($config = [])
     {
-        return new static($host, $port);
+        return new static($config);
     }
 }

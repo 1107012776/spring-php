@@ -55,11 +55,12 @@ LOGO;
         $servers = SpringContext::$app->getConfig('servers');
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         static::$masterPid = posix_getpid();
-        foreach ($servers as $server) {
+        foreach ($servers as $index => $serverConfig) {
             if (static::$masterPid !== posix_getpid()) {
                 exit(0);
             }
-            static::swooleCreateOneWorker($server);
+            $serverConfig['index'] = $index;  //索引
+            static::swooleCreateOneWorker($serverConfig);
         }
         if (static::$masterPid !== posix_getpid()) {
             exit(0);
@@ -70,18 +71,19 @@ LOGO;
         static::monitorWorkers();
     }
 
-    protected static function swooleCreateOneWorker($server)
+    protected static function swooleCreateOneWorker($serverConfig)
     {
-        $process = new \Swoole\Process(function (\Swoole\Process $worker) use ($server) {
-            switch ($server['type']) {
+        $process = new \Swoole\Process(function (\Swoole\Process $process) use ($serverConfig) {
+            $serverConfig['process'] = $process;
+            switch ($serverConfig['type']) {
                 case \SpringPHP\Server\Server::SERVER_HTTP:
-                    \SpringPHP\Server\HttpServer::start($server['host'], $server['port']);
+                    \SpringPHP\Server\HttpServer::start($serverConfig);
                     break;
             }
         });
-        $process->name('spring-php listen:' . $server['host'] . ':' . $server['port']);
+        $process->name('spring-php listen:' . $serverConfig['host'] . ':' . $serverConfig['port']);
         $pid = $process->start();
-        self::$workers[(int)$pid] = $server;
+        self::$workers[(int)$pid] = $serverConfig;
     }
 
 

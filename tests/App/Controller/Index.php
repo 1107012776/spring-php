@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Task\HelloWordTask;
+use EasySwoole\Template\UnixClient;
 use SpringPHP\Core\Controller;
 use SpringPHP\Template\Render;
+use Swoole\Coroutine;
 
 class Index extends Controller
 {
@@ -25,5 +27,14 @@ class Index extends Controller
             'msg' => 'HelloWordTask'
         ]));
         return ['msg' => 'hello12', 'task_id' => $task_id];
+    }
+
+
+    public function restart()
+    {
+        Coroutine::create(function () {
+            Render::getInstance()->restartWorker();
+        });
+        return ['msg' => 'restart render'];
     }
 }

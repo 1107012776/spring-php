@@ -16,6 +16,9 @@ return [
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
+            'template' => [ //视图渲染配置
+                'socketType' => Render::SOCKET_UNIX
+            ]
         ],
         [
             'name' => 'http',
@@ -25,6 +28,9 @@ return [
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
+            'template' => [ //视图渲染配置
+                'socketType' => Render::SOCKET_TCP
+            ]
         ],
         [
             'name' => 'http',
@@ -34,6 +40,9 @@ return [
             'sock_type' => SWOOLE_SOCK_TCP,
             'callbacks' => [
             ],
+            'template' => [ //视图渲染配置
+                'socketType' => Render::SOCKET_TCP
+            ]
         ],
     ],
     'settings' => [
@@ -55,7 +64,4 @@ return [
         'document_root' => SPRINGPHP_ROOT . '/static',
         'enable_static_handler' => true
     ],
-    'template' => [ //视图渲染配置
-        'socketType' => Render::SOCKET_UNIX
-    ]
 ];
