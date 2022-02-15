@@ -12,3 +12,4 @@ composer.phar
 composer.lock
 bootstrap.php
 Config-Local.php
+test.sh

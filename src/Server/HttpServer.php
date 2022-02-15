@@ -7,29 +7,20 @@ use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
-use SpringPHP\Template\Render;
 
 //https://www.kancloud.cn/yiyanan/swoole/980197
-class HttpServer implements ServerInter
+class HttpServer extends Server implements ServerInter
 {
-    public $http;
-    public $get;
-    public $post;
-    public $header;
-    public $server;
     public $port;
     public $host;
-    public $config;
-    protected $swoole_process;
 
     public function __construct($config = [])
     {
-        $this->swoole_process = $config['process'];
+        parent::__construct($config);
         unset($config['process']);
-        $this->config = $config;
         $host = $this->host = $config['host'];
         $port = $this->port = $config['port'];
-        $http = new \Swoole\Http\Server($host, $port);
+        $this->serv = $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             [
                 'worker_num' => SpringContext::config('settings.worker_num', 2),
@@ -38,12 +29,14 @@ class HttpServer implements ServerInter
                 'max_request' => SpringContext::config('settings.max_request', 10000),
                 'dispatch_mode' => SpringContext::config('settings.dispatch_mode', 1),
                 'max_coroutine' => SpringContext::config('settings.max_coroutine', 100000),
+                'open_http_protocol' => SpringContext::config('settings.open_http_protocol', true),
                 'open_http2_protocol' => SpringContext::config('settings.open_http2_protocol', true),
                 'socket_buffer_size' => SpringContext::config('settings.socket_buffer_size', 15 * 1024 * 1024),
                 'buffer_output_size' => SpringContext::config('settings.buffer_output_size', 15 * 1024 * 1024),
                 'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
                 'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
                 'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
+                'task_enable_coroutine' => SpringContext::config('settings.task_enable_coroutine', false),
                 'enable_static_handler' => SpringContext::config('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
                 'document_root' => SpringContext::config('settings.document_root', '')  //静态资源根目录
             ]
@@ -55,9 +48,9 @@ class HttpServer implements ServerInter
             swoole_set_process_name('spring-php.Manager');
         });
 
-        $http->on('request', function ($request, $response) use ($http) {
+        $http->on('request', function ($request, $response) use ($http, $config) {
             try {
-                $result = Dispatcher::init(new RequestHttp($request, $http), $response);
+                $result = Dispatcher::init(new RequestHttp($request, $http, $this->swoole_process, $config), $response);
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
             }
@@ -103,26 +96,8 @@ class HttpServer implements ServerInter
             $data = serialize($obj);
             echo "AsyncTask[{$task_id}] Finish end: {$data}" . PHP_EOL;
         });
-        Render::getInstance()->attachServer($http, $port, $config);
+        $this->renderInit($port, $config);
         $http->start();
     }
 
-    /**
-     * 每个worker启动的时候
-     * @param \Swoole\Http\Server $serv
-     */
-    public function onWorkerStart(\Swoole\Http\Server $serv, $worker_id)
-    {
-        Server::onWorkerStart();
-        if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
-        } else {
-            swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
-        }
-    }
-
-    public static function start($config = [])
-    {
-        return new static($config);
-    }
 }

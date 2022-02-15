@@ -22,11 +22,16 @@ class Render
 
     function attachServer(Server $server, $port = 50000, $config = [])
     {
+        $open = SpringContext::config('servers.' . $config['index'] . '.template.open', false);
+        if(empty($open)){
+            return false;
+        }
         $this->port = $port;
         $list = $this->__generateWorkerProcess($config);
         foreach ($list as $p) {
             $server->addProcess($p);
         }
+        return true;
     }
 
     function render($template = '', $data = [], $options = [])
@@ -59,6 +64,9 @@ class Render
 
     public function restartWorker()
     {
+        if(empty($this->renderWorker)){
+            return false;
+        }
         $processEnd = end($this->renderWorker);
         for ($i = 1; $i <= $this->count; $i++) {
             if ($processEnd['socketType'] == Render::SOCKET_UNIX) {

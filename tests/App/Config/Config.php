@@ -9,7 +9,7 @@ return [
     'mode' => SWOOLE_PROCESS,
     'servers' => [
         [
-            'name' => 'http',
+            'module_name' => 'Test',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => SpringContext::config('local.servers.0.port'), //7999
@@ -17,11 +17,12 @@ return [
             'callbacks' => [
             ],
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_UNIX
+                'socketType' => Render::SOCKET_UNIX,
+                'open' => true
             ]
         ],
         [
-            'name' => 'http',
+
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => 8098,
@@ -29,11 +30,12 @@ return [
             'callbacks' => [
             ],
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_TCP
+                'socketType' => Render::SOCKET_TCP,
+                'open' => true
             ]
         ],
         [
-            'name' => 'http',
+
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
             'port' => 8297,
@@ -41,7 +43,8 @@ return [
             'callbacks' => [
             ],
             'template' => [ //视图渲染配置
-                'socketType' => Render::SOCKET_TCP
+                'socketType' => Render::SOCKET_TCP,
+                'open' => true
             ]
         ],
     ],

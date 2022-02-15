@@ -37,4 +37,16 @@ class Index extends Controller
         });
         return ['msg' => 'restart render'];
     }
+
+    public function getContent()
+    {
+
+        return ['msg' => var_export($this->request->getContent(),true)];
+    }
+
+    public function rawContent()
+    {
+
+        return ['msg' => var_export($this->request->rawContent(),true)];
+    }
 }
