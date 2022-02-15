@@ -52,6 +52,8 @@ return [
         'task_worker_num' => 2,
         // 因为 `Task` 主要处理无法协程化的方法，所以这里推荐设为 `false`，避免协程下出现数据混淆的情况
         'task_enable_coroutine' => false,
+        'document_root' => SPRINGPHP_ROOT.'/static',
+        'enable_static_handler' => true
     ],
     'template' => [ //视图渲染配置
         'socketType' => Render::SOCKET_UNIX

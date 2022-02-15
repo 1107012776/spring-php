@@ -40,7 +40,7 @@ class Dispatcher
         if ($request instanceof RequestHttp) {
             $dis->http($request);
         }
-        $dis->bootstrap();
+        return $dis->bootstrap();
     }
 
     protected function http(RequestHttp $request)
@@ -69,12 +69,10 @@ class Dispatcher
                     $obj = new $controllerClass();
                     $action = isset($errorPageArr[1]) ? $errorPageArr[1] : '';
                     if (empty($action) || !method_exists($obj, $action)) {
-                        echo '404';
-                        return;
+                        return '404';
                     }
                 } else {
-                    echo '404';
-                    return;
+                    return '404';
                 }
             }
             /**
@@ -83,11 +81,12 @@ class Dispatcher
             $obj->init($this->request, $this->response);
             $response = $obj->$action();
             if (is_string($response)) {
-                echo $response;
+                return $response;
             } elseif (is_array($response)) {
                 $this->response->setHeader('Content-Type', 'application/json;charset=UTF-8');
-                echo json_encode($response, JSON_UNESCAPED_UNICODE);
+                return json_encode($response, JSON_UNESCAPED_UNICODE);
             }
         }
+        return '';
     }
 }

@@ -4,6 +4,7 @@ namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
+use SpringPHP\Inter\TaskInterface;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
 use SpringPHP\Template\Render;
@@ -11,7 +12,6 @@ use SpringPHP\Template\Render;
 //https://www.kancloud.cn/yiyanan/swoole/980197
 class HttpServer implements ServerInter
 {
-
     public $http;
     public $get;
     public $post;
@@ -39,6 +39,8 @@ class HttpServer implements ServerInter
                 'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
                 'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
                 'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
+                'enable_static_handler'=> SpringContext::config('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
+                'document_root'=> SpringContext::config('settings.document_root', '')  //静态资源根目录
             ]
         );
 
@@ -49,51 +51,54 @@ class HttpServer implements ServerInter
         });
 
         $http->on('request', function ($request, $response) use ($http) {
-            $serv = $http;
-            if (isset($request->server)) {
-                $this->server = $request->server;
-            }
-            if (isset($request->header)) {
-                $this->header = $request->header;
-            }
-            if (isset($request->get)) {
-                $this->get = $request->get;
-            }
-            if (isset($request->post)) {
-                $this->post = $request->post;
-            }
-
-            // TODO handle img
-
-            ob_start();
             try {
-                Dispatcher::init(new RequestHttp($request, $serv), $response);
+                $result = Dispatcher::init(new RequestHttp($request, $http), $response);
             } catch (\Exception $e) {
-                var_dump($e);
+                echo var_export($e, true).PHP_EOL;
             }
-            $result = ob_get_contents();
-            ob_end_clean();
-            // add Header
-
-            // add cookies
-
-            // set status
             $response->end($result);
         });
 
         //处理异步任务(此回调函数在task进程中执行)
         $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
             echo "New AsyncTask[id={$task_id}]" . PHP_EOL;
+            $obj = is_object($data) ? $data:unserialize($data);
+            if(is_object($obj) && $obj instanceof TaskInterface){
+                try{
+                    $obj->before($task_id);
+                    $obj->run($task_id);
+                    $obj->after($task_id);
+                }catch (\Exception $e){
+                    $obj->onException($e,[
+                        'serv' => $serv,
+                        'task_id' => $task_id,
+                        'reactor_id' => $reactor_id,
+                        'data' => $data,
+                    ]);
+                }
+            }
             //返回任务执行的结果
-            $serv->finish("{$data} -> OK");
+            $serv->finish(serialize($obj));
         });
-
-//处理异步任务的结果(此回调函数在worker进程中执行)
+        //处理异步任务的结果(此回调函数在worker进程中执行)
         $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
-            echo "AsyncTask[{$task_id}] Finish: {$data}" . PHP_EOL;
+            echo "AsyncTask[{$task_id}] Finish start: {$data}" . PHP_EOL;
+            $obj = unserialize($data);
+            if(is_object($obj) && $obj instanceof TaskInterface){
+                try{
+                    $obj->finish($task_id);
+                }catch (\Exception $e){
+                    $obj->onException($e,[
+                        'serv' => $serv,
+                        'task_id' => $task_id,
+                        'data' => $data,
+                    ]);
+                }
+            }
+            $data = serialize($obj);
+            echo "AsyncTask[{$task_id}] Finish end: {$data}" . PHP_EOL;
         });
         Render::getInstance()->attachServer($http, $port);
-
         $http->start();
     }
 
@@ -105,7 +110,7 @@ class HttpServer implements ServerInter
     {
         Server::onWorkerStart();
         if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id}");
+            swoole_set_process_name("spring-php.task.{$worker_id} pid=".getmypid());
         } else {
             swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
         }

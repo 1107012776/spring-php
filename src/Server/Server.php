@@ -11,8 +11,8 @@ class Server
     public static function onWorkerStart()
     {
         SpringContext::resetConfig();
-        \SpringPHP\Core\SimpleAutoload::init();
-        \SpringPHP\Core\SimpleAutoload::add([
+        \SpringPHP\Component\SimpleAutoload::init();
+        \SpringPHP\Component\SimpleAutoload::add([
             'App' => SPRINGPHP_ROOT . '/App'
         ]);
     }
