@@ -1,7 +1,7 @@
 <?php
 
 namespace SpringPHP\Inter;
-interface TaskInterface
+interface TaskInter
 {
     public function __construct($data);
     public function before($taskId = 0, $workerIndex = 0);

@@ -4,7 +4,7 @@ namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
-use SpringPHP\Inter\TaskInterface;
+use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
 use SpringPHP\Template\Render;
@@ -63,7 +63,7 @@ class HttpServer implements ServerInter
         $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
             echo "New AsyncTask[id={$task_id}]" . PHP_EOL;
             $obj = is_object($data) ? $data:unserialize($data);
-            if(is_object($obj) && $obj instanceof TaskInterface){
+            if(is_object($obj) && $obj instanceof TaskInter){
                 try{
                     $obj->before($task_id);
                     $obj->run($task_id);
@@ -84,7 +84,7 @@ class HttpServer implements ServerInter
         $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
             echo "AsyncTask[{$task_id}] Finish start: {$data}" . PHP_EOL;
             $obj = unserialize($data);
-            if(is_object($obj) && $obj instanceof TaskInterface){
+            if(is_object($obj) && $obj instanceof TaskInter){
                 try{
                     $obj->finish($task_id);
                 }catch (\Exception $e){

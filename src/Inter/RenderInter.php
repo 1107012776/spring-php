@@ -1,7 +1,7 @@
 <?php
 
 namespace SpringPHP\Inter;
-interface RenderInterface
+interface RenderInter
 {
     public function render(string $template, ?array $data = null, ?array $options = null): ?string;
 

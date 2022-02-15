@@ -3,9 +3,9 @@
 namespace SpringPHP\Template;
 
 
-use SpringPHP\Inter\RenderInterface;
+use SpringPHP\Inter\RenderInter;
 
-class Smarty implements RenderInterface
+class Smarty implements RenderInter
 {
 
     private $smarty;
