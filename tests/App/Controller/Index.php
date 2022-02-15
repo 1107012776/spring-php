@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Task\HelloWordTask;
-use EasySwoole\Template\UnixClient;
+
 use SpringPHP\Core\Controller;
 use SpringPHP\Template\Render;
 use Swoole\Coroutine;
