@@ -3,7 +3,6 @@
 namespace App\Test\Controller;
 
 
-
 use SpringPHP\Core\Controller;
 use SpringPHP\Template\Render;
 

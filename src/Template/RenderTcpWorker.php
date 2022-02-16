@@ -103,11 +103,11 @@ class RenderTcpWorker
                     }
                     $data = $this->request($string);
                     $num = fwrite($socket, $data);
- /*                   if ($num == 0) {
-                        echo "WRITE ERROR:" . "\n";
-                    } else {
-                        echo "request already succeed\n";
-                    }*/
+                    /*                   if ($num == 0) {
+                                           echo "WRITE ERROR:" . "\n";
+                                       } else {
+                                           echo "request already succeed\n";
+                                       }*/
                     $this->closeSocket($socket);
                 }
             }

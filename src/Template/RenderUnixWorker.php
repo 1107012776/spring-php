@@ -49,7 +49,7 @@ class RenderUnixWorker
         @cli_set_process_title('spring-php RenderWorker unix master process pid=' . posix_getpid());
         $socket = new  \Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $socket->bind($runtime_path."/spring-php-render-worker-" . $this->id . ".sock");
+        $socket->bind($runtime_path . "/spring-php-render-worker-" . $this->id . ".sock");
         $socket->listen(2048);
         @cli_set_process_title('spring-php RenderWorker unix worker pid=' . posix_getpid());
         go(function () use ($socket) {

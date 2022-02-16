@@ -11,11 +11,11 @@ return [
             'module_name' => 'Test',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' => SpringContext::config('local.servers.0.port',7999), //7999
+            'port' => SpringContext::config('local.servers.0.port', 7999), //7999
             'template' => [ //视图渲染配置
                 'socket_type' => Render::SOCKET_UNIX,
                 'open' => true,
-                'callback' => function ($tpl){
+                'callback' => function ($tpl) {
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 },
@@ -24,10 +24,10 @@ return [
             'crontab' => [
                 'open' => true,
                 'list' => [
-                   [
-                       'class' => \App\Timer\FirstTimer::class,
-                       'ms' => 30000
-                   ],
+                    [
+                        'class' => \App\Timer\FirstTimer::class,
+                        'ms' => 30000
+                    ],
                     [
                         'class' => \App\Timer\SecondTimer::class,
                         'ms' => 50000
@@ -42,7 +42,7 @@ return [
             'template' => [ //视图渲染配置
                 'socket_type' => Render::SOCKET_TCP,
                 'open' => true,
-                'callback' => function ($tpl){
+                'callback' => function ($tpl) {
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 }
@@ -68,7 +68,7 @@ return [
             'template' => [ //视图渲染配置
                 'socket_type' => Render::SOCKET_TCP,
                 'open' => true,
-                'callback' => function ($tpl){
+                'callback' => function ($tpl) {
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 }

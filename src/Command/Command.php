@@ -141,36 +141,37 @@ class Command
         return $res;
     }
 
-    public static function installDemo(){
+    public static function installDemo()
+    {
         $demoVendorBasePath = '';
         foreach ([SPRINGPHP_ROOT . '/vendor/lys/spring-php/tests', SPRINGPHP_ROOT . '/../vendor/lys/spring-php/tests'] as $file) {
-            if(file_exists($file)){
+            if (file_exists($file)) {
                 $demoVendorBasePath = $file;
-               break;
+                break;
             }
         }
-        if(empty($demoVendorBasePath)){
+        if (empty($demoVendorBasePath)) {
             return ['fail'];
         }
-        $needDirs = ['App','static'];
-        $needFiles = ['bootstrap.php','test.sh'];
+        $needDirs = ['App', 'static'];
+        $needFiles = ['bootstrap.php', 'test.sh'];
         $util = new FileDirUtil();
-        foreach ($needDirs as $val){
-            if(file_exists(SPRINGPHP_ROOT.'/'.$val)){
-                if($util->unlinkDir(SPRINGPHP_ROOT.'/'.$val)){
-                    $util->copyDir($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+        foreach ($needDirs as $val) {
+            if (file_exists(SPRINGPHP_ROOT . '/' . $val)) {
+                if ($util->unlinkDir(SPRINGPHP_ROOT . '/' . $val)) {
+                    $util->copyDir($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
                 }
-            }else{
-                $util->copyDir($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+            } else {
+                $util->copyDir($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
             }
         }
-        foreach ($needFiles as $val){
-            if(file_exists(SPRINGPHP_ROOT.'/'.$val)){
-                if($util->unlinkFile(SPRINGPHP_ROOT.'/'.$val)){
-                    $util->copyFile($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+        foreach ($needFiles as $val) {
+            if (file_exists(SPRINGPHP_ROOT . '/' . $val)) {
+                if ($util->unlinkFile(SPRINGPHP_ROOT . '/' . $val)) {
+                    $util->copyFile($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
                 }
-            }else{
-                $util->copyFile($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+            } else {
+                $util->copyFile($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
             }
         }
         return ['success'];

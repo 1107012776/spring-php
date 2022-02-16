@@ -41,12 +41,12 @@ class Index extends Controller
     public function getContent()
     {
 
-        return ['msg' => var_export($this->request->getContent(),true)];
+        return ['msg' => var_export($this->request->getContent(), true)];
     }
 
     public function rawContent()
     {
 
-        return ['msg' => var_export($this->request->rawContent(),true)];
+        return ['msg' => var_export($this->request->rawContent(), true)];
     }
 }

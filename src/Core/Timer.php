@@ -9,19 +9,20 @@ abstract class Timer
 
     public function __construct($params = [])
     {
-        foreach ($params as $key => $val){
-            if(property_exists($this, $key)){
+        foreach ($params as $key => $val) {
+            if (property_exists($this, $key)) {
                 $this->$key = $val;
             }
         }
     }
 
-    public function run(){
-        try{
+    public function run()
+    {
+        try {
             $this->before();
             $this->exec();
             $this->after();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->onException($e);
         }
         return $this->response;

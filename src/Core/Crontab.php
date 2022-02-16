@@ -30,7 +30,7 @@ class Crontab
     public function restartWorker()
     {
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $file = $runtime_path."/spring-php-swoole-".$this->config['index']."-timer-restart.log";
+        $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
         file_put_contents($file, time());
         return true;
     }
@@ -38,7 +38,7 @@ class Crontab
     public function getRestartFile()
     {
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $file = $runtime_path."/spring-php-swoole-".$this->config['index']."-timer-restart.log";
+        $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
         return $file;
     }
 
@@ -56,7 +56,7 @@ class Crontab
                 $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
                 $timerArr = [];
                 foreach ($list as $val) {
-                      $timer_id = \Swoole\Timer::tick($val['ms'], function ($timer) use ($val, &$timer_id,&$timerArr) {
+                    $timer_id = \Swoole\Timer::tick($val['ms'], function ($timer) use ($val, &$timer_id, &$timerArr) {
                         /**
                          * @var \SpringPHP\Inter\TimerInter $obj
                          */
@@ -69,16 +69,16 @@ class Crontab
                         $obj = new $class($val);
                         $response = $obj->run();
                         if (!empty($response)) {
-                            echo is_string($response) ? $response:var_export($response, true).PHP_EOL;
+                            echo is_string($response) ? $response : var_export($response, true) . PHP_EOL;
                         }
                     });
                     $timerArr[$timer_id] = $timer_id;
                 }
                 $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id) {
                     $file = $this->getRestartFile();
-                    if(file_exists($file)){
+                    if (file_exists($file)) {
                         unlink($file);
-                        foreach ($timerArr as $value){
+                        foreach ($timerArr as $value) {
                             \Swoole\Timer::clear($value);
                         }
                         \Swoole\Timer::clear($timer_id);

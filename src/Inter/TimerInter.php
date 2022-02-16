@@ -1,5 +1,7 @@
 <?php
+
 namespace SpringPHP\Inter;
-interface TimerInter{
+interface TimerInter
+{
     public function run();
 }

@@ -90,6 +90,6 @@ class RequestHttp implements RequestInter
 
     public function getModuleName()
     {
-        return empty($this->config['module_name']) ? '':$this->config['module_name'];
+        return empty($this->config['module_name']) ? '' : $this->config['module_name'];
     }
 }

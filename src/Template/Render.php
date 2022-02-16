@@ -12,6 +12,7 @@ use SpringPHP\Core\Crontab;
 use SpringPHP\Core\SpringContext;
 use Swoole\Server;
 use SpringPHP\Component\Protocol;
+
 class Render
 {
     use Singleton;
@@ -22,11 +23,12 @@ class Render
     const SOCKET_UNIX = 'UNIX';
     const SOCKET_TCP = 'TCP';
 
-    public function trigger($tpl){
+    public function trigger($tpl)
+    {
         $config = $this->config;
         $callback = SpringContext::config('servers.' . $config['index'] . '.template.callback', null);
-        if(!empty($callback)){
-           return $callback($tpl);
+        if (!empty($callback)) {
+            return $callback($tpl);
         }
         return '';
     }
@@ -35,7 +37,7 @@ class Render
     {
         $this->config = $config;
         $open = SpringContext::config('servers.' . $config['index'] . '.template.open', false);
-        if(empty($open)){
+        if (empty($open)) {
             return false;
         }
         $this->port = $port;
@@ -76,7 +78,7 @@ class Render
 
     public function restartWorker()
     {
-        if(empty($this->renderWorker)){
+        if (empty($this->renderWorker)) {
             return false;
         }
         $processEnd = end($this->renderWorker);
@@ -178,7 +180,7 @@ class Render
     {
         $socket = new \Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $retval = $socket->connect($runtime_path."/spring-php-render-worker-" . ($this->port + $id) . ".sock");
+        $retval = $socket->connect($runtime_path . "/spring-php-render-worker-" . ($this->port + $id) . ".sock");
         $str = '';
         $socket->send(Protocol::pack(serialize($requestData)));
         while ($retval) {
