@@ -4,7 +4,6 @@ namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
-use SpringPHP\Inter\EventInter;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
@@ -18,6 +17,7 @@ class HttpServer extends Server implements ServerInter
     public function __construct($config = [])
     {
         parent::__construct($config);
+        unset($config['process']);
         $host = $this->host = $config['host'];
         $port = $this->port = $config['port'];
         $this->serv = $http = new \Swoole\Http\Server($host, $port);
