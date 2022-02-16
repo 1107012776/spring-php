@@ -58,7 +58,7 @@ class Command
                         echo var_export($res, true) . PHP_EOL;
                     }
                     break;
-                case 'install_demo':  // demo安装
+                case 'installDemo':  // demo安装
                     $res = static::installDemo();
                     if (is_array($res)) {
                         foreach ($res as $row) {
@@ -86,7 +86,7 @@ class Command
         echo '    queryProcessNum ' . PHP_EOL;
         echo '    queryProcess ' . PHP_EOL;
         echo '    process ' . PHP_EOL;
-        echo '    install_demo ' . PHP_EOL;
+        echo '    installDemo ' . PHP_EOL;
     }
 
     /**
@@ -150,7 +150,7 @@ class Command
             }
         }
         if(empty($demoVendorBasePath)){
-            return 'fail';
+            return ['fail'];
         }
         $needDirs = ['App','static'];
         $needFiles = ['bootstrap.php','test.sh'];
@@ -173,7 +173,7 @@ class Command
                 $util->copyFile($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
             }
         }
-        return 'success';
+        return ['success'];
     }
 
 
