@@ -15,7 +15,8 @@ class Server
      * @var \Swoole\Server
      */
     protected $serv;
-    protected $config;
+
+    protected $config; //serverConfig
     /**
      * @var \Swoole\Process $swoole_process
      */
@@ -54,9 +55,10 @@ class Server
         } else {
             swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
         }
-        if($worker_id == 0){ //重启RenderWorker
+        if($worker_id == 0){ //重启RenderWorker Crontab
             \Swoole\Coroutine::create(function () {
                 Render::getInstance()->restartWorker();
+                Crontab::getInstance()->restartWorker();
             });
         }
     }

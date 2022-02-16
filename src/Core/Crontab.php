@@ -27,6 +27,21 @@ class Crontab
         return true;
     }
 
+    public function restartWorker()
+    {
+        $runtime_path = SpringContext::config('settings.runtime_path');
+        $file = $runtime_path."/spring-php-swoole-".$this->config['index']."-timer-restart.log";
+        file_put_contents($file, time());
+        return true;
+    }
+
+    public function getRestartFile()
+    {
+        $runtime_path = SpringContext::config('settings.runtime_path');
+        $file = $runtime_path."/spring-php-swoole-".$this->config['index']."-timer-restart.log";
+        return $file;
+    }
+
     protected function __generateWorkerProcess($config = [])
     {
         $array = [];
@@ -39,13 +54,15 @@ class Crontab
                     'App' => SPRINGPHP_ROOT . '/App'
                 ]);
                 $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
+                $timerArr = [];
                 foreach ($list as $val) {
-                    $timer_id = \Swoole\Timer::tick($val['ms'], function ($timer) use ($val, &$timer_id) {
+                      $timer_id = \Swoole\Timer::tick($val['ms'], function ($timer) use ($val, &$timer_id,&$timerArr) {
                         /**
                          * @var \SpringPHP\Inter\TimerInter $obj
                          */
                         $class = $val['class'];
                         if (!class_exists($class)) {
+                            unset($timerArr[$timer_id]);
                             \Swoole\Timer::clear($timer_id);
                             return;
                         }
@@ -55,7 +72,18 @@ class Crontab
                             echo is_string($response) ? $response:var_export($response, true).PHP_EOL;
                         }
                     });
+                    $timerArr[$timer_id] = $timer_id;
                 }
+                $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id) {
+                    $file = $this->getRestartFile();
+                    if(file_exists($file)){
+                        unlink($file);
+                        foreach ($timerArr as $value){
+                            \Swoole\Timer::clear($value);
+                        }
+                        \Swoole\Timer::clear($timer_id);
+                    }
+                });
                 \Swoole\Event::wait();
             });
             $process->name('worker');

@@ -46,6 +46,19 @@ return [
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 }
+            ],
+            'crontab' => [
+                'open' => true,
+                'list' => [
+                    [
+                        'class' => \App\Timer\FirstTimer::class,
+                        'ms' => 30000
+                    ],
+                    [
+                        'class' => \App\Timer\SecondTimer::class,
+                        'ms' => 50000
+                    ],
+                ]
             ]
         ],
         [
@@ -59,6 +72,19 @@ return [
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 }
+            ],
+            'crontab' => [
+                'open' => true,
+                'list' => [
+                    [
+                        'class' => \App\Timer\FirstTimer::class,
+                        'ms' => 30000
+                    ],
+                    [
+                        'class' => \App\Timer\SecondTimer::class,
+                        'ms' => 50000
+                    ],
+                ]
             ]
         ],
     ],

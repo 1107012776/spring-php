@@ -177,7 +177,8 @@ class Render
     function unixRestartRender($id, $requestData = [])
     {
         $socket = new \Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
-        $retval = $socket->connect("/tmp/spring-php-server-" . ($this->port + $id) . ".sock");
+        $runtime_path = SpringContext::config('settings.runtime_path');
+        $retval = $socket->connect($runtime_path."/spring-php-render-worker-" . ($this->port + $id) . ".sock");
         $str = '';
         $socket->send(Protocol::pack(serialize($requestData)));
         while ($retval) {
