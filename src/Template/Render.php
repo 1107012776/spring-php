@@ -17,11 +17,22 @@ class Render
     private $renderWorker = [];
     private $count = 2;
     private $port = 50000;
+    private $config; //serverConfig
     const SOCKET_UNIX = 'UNIX';
     const SOCKET_TCP = 'TCP';
 
+    public function trigger($tpl){
+        $config = $this->config;
+        $callback = SpringContext::config('servers.' . $config['index'] . '.template.callback', null);
+        if(!empty($callback)){
+           return $callback($tpl);
+        }
+        return '';
+    }
+
     function attachServer(Server $server, $port = 50000, $config = [])
     {
+        $this->config = $config;
         $open = SpringContext::config('servers.' . $config['index'] . '.template.open', false);
         if(empty($open)){
             return false;
@@ -90,6 +101,11 @@ class Render
         $port = $this->port;
         for ($i = 1; $i <= $this->count; $i++) {
             $process = new \Swoole\Process(function (\Swoole\Process $process) use ($i, $ip, $port, $socketType) {
+                SpringContext::resetConfig();
+                \SpringPHP\Component\SimpleAutoload::init();
+                \SpringPHP\Component\SimpleAutoload::add([
+                    'App' => SPRINGPHP_ROOT . '/App'
+                ]);
                 if ($socketType == Render::SOCKET_UNIX) {
                     RenderUnixWorker::start($port + $i, $process);
                 } else {
