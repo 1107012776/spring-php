@@ -1,6 +1,6 @@
 <?php
 
-namespace SpringPHP\Template;
+namespace App\Template;
 
 
 use SpringPHP\Inter\RenderInter;

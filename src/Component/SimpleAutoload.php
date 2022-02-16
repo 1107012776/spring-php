@@ -7,7 +7,11 @@ class SimpleAutoload
 
     public static function add($rule = [])
     {
+        if (in_array($rule, static::$rules)) {
+            return true;
+        }
         array_push(static::$rules, $rule);
+        return true;
     }
 
     public static function load($classname)

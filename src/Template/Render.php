@@ -17,16 +17,32 @@ class Render
     private $renderWorker = [];
     private $count = 2;
     private $port = 50000;
+    private $config; //serverConfig
     const SOCKET_UNIX = 'UNIX';
     const SOCKET_TCP = 'TCP';
 
+    public function trigger($tpl){
+        $config = $this->config;
+        $callback = SpringContext::config('servers.' . $config['index'] . '.template.callback', null);
+        if(!empty($callback)){
+           return $callback($tpl);
+        }
+        return '';
+    }
+
     function attachServer(Server $server, $port = 50000, $config = [])
     {
+        $this->config = $config;
+        $open = SpringContext::config('servers.' . $config['index'] . '.template.open', false);
+        if(empty($open)){
+            return false;
+        }
         $this->port = $port;
         $list = $this->__generateWorkerProcess($config);
         foreach ($list as $p) {
             $server->addProcess($p);
         }
+        return true;
     }
 
     function render($template = '', $data = [], $options = [])
@@ -59,6 +75,9 @@ class Render
 
     public function restartWorker()
     {
+        if(empty($this->renderWorker)){
+            return false;
+        }
         $processEnd = end($this->renderWorker);
         for ($i = 1; $i <= $this->count; $i++) {
             if ($processEnd['socketType'] == Render::SOCKET_UNIX) {
@@ -76,12 +95,17 @@ class Render
 
     protected function __generateWorkerProcess($config = []): array
     {
-        $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socketType', Render::SOCKET_UNIX);
+        $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socket_type', Render::SOCKET_UNIX);
         $array = [];
         $ip = "0.0.0.0";
         $port = $this->port;
         for ($i = 1; $i <= $this->count; $i++) {
             $process = new \Swoole\Process(function (\Swoole\Process $process) use ($i, $ip, $port, $socketType) {
+                SpringContext::resetConfig();
+                \SpringPHP\Component\SimpleAutoload::init();
+                \SpringPHP\Component\SimpleAutoload::add([
+                    'App' => SPRINGPHP_ROOT . '/App'
+                ]);
                 if ($socketType == Render::SOCKET_UNIX) {
                     RenderUnixWorker::start($port + $i, $process);
                 } else {

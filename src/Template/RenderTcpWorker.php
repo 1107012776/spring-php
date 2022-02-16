@@ -50,8 +50,7 @@ class RenderTcpWorker
             }
             $this->swoole_process->exit(0);
         }
-        $smarty = new  Smarty();
-        return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
+        return Render::getInstance()->trigger($tpl);
     }
 
 
@@ -73,7 +72,7 @@ class RenderTcpWorker
 
     public function closeSocket($socket)
     {
-        echo 'exit one socket ' . (int)$socket . "\r\n";
+//        echo 'exit one socket ' . (int)$socket . "\r\n";
         unset(self::$allSockets[(int)$socket]);
         fclose($socket);
     }
@@ -87,7 +86,7 @@ class RenderTcpWorker
             }
             $write = $except = null;
             $read = self::$allSockets;
-            echo 'blocking pid=' . posix_getpid() . "\r\n";
+//            echo 'blocking pid=' . posix_getpid() . "\r\n";
             stream_select($read, $write, $except, NULL);  //阻塞在这边，这边不判断可写的情况
             foreach ($read as $index => $socket) {
                 if ($socket === self::$master_socket) {
@@ -104,11 +103,11 @@ class RenderTcpWorker
                     }
                     $data = $this->request($string);
                     $num = fwrite($socket, $data);
-                    if ($num == 0) {
+ /*                   if ($num == 0) {
                         echo "WRITE ERROR:" . "\n";
                     } else {
                         echo "request already succeed\n";
-                    }
+                    }*/
                     $this->closeSocket($socket);
                 }
             }

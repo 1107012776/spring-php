@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Task\HelloWordTask;
-use EasySwoole\Template\UnixClient;
+
 use SpringPHP\Core\Controller;
 use SpringPHP\Template\Render;
 use Swoole\Coroutine;
@@ -36,5 +36,17 @@ class Index extends Controller
             Render::getInstance()->restartWorker();
         });
         return ['msg' => 'restart render'];
+    }
+
+    public function getContent()
+    {
+
+        return ['msg' => var_export($this->request->getContent(),true)];
+    }
+
+    public function rawContent()
+    {
+
+        return ['msg' => var_export($this->request->rawContent(),true)];
     }
 }

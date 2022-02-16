@@ -36,8 +36,7 @@ class RenderUnixWorker
             });
             return '';
         }
-        $smarty = new  Smarty();
-        return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
+        return Render::getInstance()->trigger($tpl);
     }
 
 

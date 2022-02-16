@@ -55,6 +55,7 @@ LOGO;
         $servers = SpringContext::$app->getConfig('servers');
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
         static::$masterPid = posix_getpid();
+        @file_put_contents($pid_file, static::$masterPid);
         foreach ($servers as $index => $serverConfig) {
             if (static::$masterPid !== posix_getpid()) {
                 exit(0);
@@ -66,7 +67,6 @@ LOGO;
             exit(0);
         }
         @cli_set_process_title('spring-php');
-        @file_put_contents($pid_file, static::$masterPid);
         Command::signalHandlerRegister();  //主进程信号注册
         static::monitorWorkers();
     }
