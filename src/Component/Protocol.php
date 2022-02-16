@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SpringPHP\Template;
+namespace SpringPHP\Component;
 
 
 class Protocol

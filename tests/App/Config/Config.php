@@ -18,7 +18,21 @@ return [
                 'callback' => function ($tpl){
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
-                }
+                },
+                'count' => 3
+            ],
+            'crontab' => [
+                'open' => true,
+                'list' => [
+                   [
+                       'class' => \App\Timer\FirstTimer::class,
+                       'ms' => 3000
+                   ],
+                    [
+                        'class' => \App\Timer\SecondTimer::class,
+                        'ms' => 5000
+                    ],
+                ]
             ]
         ],
         [

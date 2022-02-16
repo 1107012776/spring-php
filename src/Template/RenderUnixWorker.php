@@ -2,7 +2,7 @@
 
 namespace SpringPHP\Template;
 
-
+use SpringPHP\Component\Protocol;
 use Swoole\Coroutine;
 
 class RenderUnixWorker

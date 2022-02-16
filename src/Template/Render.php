@@ -8,9 +8,10 @@ namespace SpringPHP\Template;
 
 use SpringPHP\Component\Singleton;
 
+use SpringPHP\Core\Crontab;
 use SpringPHP\Core\SpringContext;
 use Swoole\Server;
-
+use SpringPHP\Component\Protocol;
 class Render
 {
     use Singleton;
@@ -96,6 +97,7 @@ class Render
     protected function __generateWorkerProcess($config = []): array
     {
         $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socket_type', Render::SOCKET_UNIX);
+        $this->count = SpringContext::config('servers.' . $config['index'] . '.template.count', 2);
         $array = [];
         $ip = "0.0.0.0";
         $port = $this->port;
@@ -112,7 +114,7 @@ class Render
                     RenderTcpWorker::start($ip, $port + $i, $process);
                 }
             });
-            $process->name('RenderWorker');
+            $process->name('worker');
             $this->renderWorker[$i] = [
                 'socketType' => $socketType,
                 'ip' => $ip,

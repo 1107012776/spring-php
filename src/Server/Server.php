@@ -2,6 +2,7 @@
 
 namespace SpringPHP\Server;
 
+use SpringPHP\Core\Crontab;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Template\Render;
 
@@ -36,10 +37,12 @@ class Server
 
     public function renderInit($port, $config){
         Render::getInstance()->attachServer($this->serv, $port, $config);
+        Crontab::getInstance()->attachServer($this->serv, $config);
     }
 
 
     /**
+     *
      * 每个worker启动的时候
      * @param \Swoole\Server $serv
      */
