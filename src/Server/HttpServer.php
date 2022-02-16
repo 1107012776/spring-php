@@ -4,7 +4,6 @@ namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
-use SpringPHP\Inter\EventInter;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
