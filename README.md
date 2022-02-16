@@ -5,7 +5,6 @@ SpringPHP是一款基于Swoole的高性能框架
 当前属于测试阶段，请勿用于生产环境
 
 # 安装
-
 ```
 composer require lys/spring-php
 
@@ -14,7 +13,6 @@ cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本sp
 php spring-php installDemo  //安装demo案例，可自由删减不需要的部分
 
 ```
-
 # 示例（tests目录）
 
 ### 启动
