@@ -14,7 +14,7 @@ composer require lys/spring-php
 
 cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本spring-php
 
-php spring-php installDemo  //安装demo案例，可自有删减不需要的部分
+php spring-php installDemo  //安装demo案例，可自由删减不需要的部分
 
 ```
 
