@@ -11,7 +11,7 @@ return [
             'module_name' => 'Test',
             'type' => Server::SERVER_HTTP,
             'host' => '0.0.0.0',
-            'port' => SpringContext::config('local.servers.0.port'), //7999
+            'port' => SpringContext::config('local.servers.0.port',7999), //7999
             'template' => [ //视图渲染配置
                 'socket_type' => Render::SOCKET_UNIX,
                 'open' => true,
