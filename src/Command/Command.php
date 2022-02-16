@@ -3,6 +3,7 @@
 namespace SpringPHP\Command;
 
 use SpringPHP\Boot;
+use SpringPHP\Component\FileDirUtil;
 use SpringPHP\Core\SpringContext;
 
 class Command
@@ -57,6 +58,16 @@ class Command
                         echo var_export($res, true) . PHP_EOL;
                     }
                     break;
+                case 'install_demo':  // demo安装
+                    $res = static::installDemo();
+                    if (is_array($res)) {
+                        foreach ($res as $row) {
+                            echo $row . PHP_EOL;
+                        }
+                    } else {
+                        echo var_export($res, true) . PHP_EOL;
+                    }
+                    break;
                 default:
                     static::defaultHelp();
                     break;
@@ -75,6 +86,7 @@ class Command
         echo '    queryProcessNum ' . PHP_EOL;
         echo '    queryProcess ' . PHP_EOL;
         echo '    process ' . PHP_EOL;
+        echo '    install_demo ' . PHP_EOL;
     }
 
     /**
@@ -127,6 +139,41 @@ class Command
     {
         exec("ps -auxf | grep " . $service, $res);
         return $res;
+    }
+
+    public static function installDemo(){
+        $demoVendorBasePath = '';
+        foreach ([SPRINGPHP_ROOT . '/vendor/lys/spring-php/tests', SPRINGPHP_ROOT . '/../vendor/lys/spring-php/tests'] as $file) {
+            if(file_exists($file)){
+                $demoVendorBasePath = $file;
+               break;
+            }
+        }
+        if(empty($demoVendorBasePath)){
+            return 'fail';
+        }
+        $needDirs = ['App','static'];
+        $needFiles = ['bootstrap.php','test.sh'];
+        $util = new FileDirUtil();
+        foreach ($needDirs as $val){
+            if(file_exists(SPRINGPHP_ROOT.'/'.$val)){
+                if($util->unlinkDir(SPRINGPHP_ROOT.'/'.$val)){
+                    $util->copyDir($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+                }
+            }else{
+                $util->copyDir($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+            }
+        }
+        foreach ($needFiles as $val){
+            if(file_exists(SPRINGPHP_ROOT.'/'.$val)){
+                if($util->unlinkFile(SPRINGPHP_ROOT.'/'.$val)){
+                    $util->copyFile($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+                }
+            }else{
+                $util->copyFile($demoVendorBasePath.'/'.$val,SPRINGPHP_ROOT.'/'.$val);
+            }
+        }
+        return 'success';
     }
 
 
