@@ -8,6 +8,16 @@ SpringPHP是一款基于Swoole的高性能框架
 composer require lys/spring-php
 
 # 示例（tests目录）
+### 首先需要
+
+```
+
+cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本spring-php
+
+php spring-php installDemo  //安装demo案例，可自有删减不需要的部分
+
+```
+
 ### 启动
 ```bash
 php spring-php start   //守护模式需要在start后面加 -d
