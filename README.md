@@ -6,7 +6,7 @@ SpringPHP是一款基于Swoole的高性能框架
 
 # 安装
 ```
-composer require lys/spring-php
+composer require lys/spring-php=dev-main
 
 cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本spring-php
 
