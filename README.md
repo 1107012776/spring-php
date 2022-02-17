@@ -12,6 +12,8 @@ cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本sp
 
 php spring-php installDemo  //安装demo案例，可自由删减不需要的部分
 
+composer require smarty/smarty   //demo案例依赖smarty模板来渲染视图
+
 ```
 # 示例（tests目录）
 
