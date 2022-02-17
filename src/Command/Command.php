@@ -59,6 +59,12 @@ class Command
                     }
                     break;
                 case 'installDemo':  // demo安装
+                    fwrite(STDOUT, "Please confirm to install the demo, which will overwrite the existing code? [yes/no]");
+                    $check = trim(fgets(STDIN));
+                    if($check != 'yes'){
+                        echo 'Installation cancelled' . PHP_EOL;
+                        break;
+                    }
                     $res = static::installDemo();
                     if (is_array($res)) {
                         foreach ($res as $row) {
