@@ -6,6 +6,8 @@ use SpringPHP\Inter\RequestInter;
 
 class RequestHttp implements RequestInter
 {
+
+
     /**
      * @var \Swoole\Http\Request
      */
@@ -53,6 +55,12 @@ class RequestHttp implements RequestInter
     {
         return $this->request->rawContent();
     }
+
+    public function getData()
+    {
+        return $this->request->getData();
+    }
+
 
     public function files()
     {

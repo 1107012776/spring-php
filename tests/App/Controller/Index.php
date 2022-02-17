@@ -49,4 +49,50 @@ class Index extends Controller
 
         return ['msg' => var_export($this->request->rawContent(), true)];
     }
+
+    public function get()
+    {
+
+        return ['msg' => var_export($this->request->get('id', 0), true)];
+    }
+
+    public function post()
+    {
+
+        return ['msg' => var_export($this->request->post('id', 0), true)];
+    }
+
+    public function put()
+    {
+        return [
+            'id' => $this->request->post('id', 0),
+            'rawContent' => $this->request->rawContent(),
+            'getContent' => $this->request->getContent(),
+            'getData' => $this->request->getData(),
+        ];
+    }
+
+
+    public function head()
+    {
+
+        return [
+            'id' => $this->request->post('id', 0),
+            'rawContent' => $this->request->rawContent(),
+            'getContent' => $this->request->getContent(),
+            'getData' => $this->request->getData(),
+        ];
+    }
+
+
+    public function delete()
+    {
+        return [
+            'id' => $this->request->post('id', 0),
+            'rawContent' => $this->request->rawContent(),
+            'getContent' => $this->request->getContent(),
+            'getData' => $this->request->getData(),
+        ];
+    }
+
 }

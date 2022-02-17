@@ -22,7 +22,7 @@ return [
                 'count' => 3
             ],
             'crontab' => [
-                'open' => true,
+                'open' => false,
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,
@@ -48,7 +48,7 @@ return [
                 }
             ],
             'crontab' => [
-                'open' => true,
+                'open' => false,
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,
@@ -74,7 +74,7 @@ return [
                 }
             ],
             'crontab' => [
-                'open' => true,
+                'open' => false,
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,

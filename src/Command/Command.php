@@ -102,19 +102,16 @@ class Command
                 case SIGUSR2:
                     foreach (Boot::$workers as $worker_pid => $server) {
                         $p = posix_kill($worker_pid, $signal);
-                        var_dump($p);
                     }
                     break;
                 case SIGUSR1:
                     foreach (Boot::$workers as $worker_pid => $server) {
                         $p = posix_kill($worker_pid, $signal);
-                        var_dump($p);
                     }
                     break;
                 case SIGALRM:
                     foreach (Boot::$workers as $worker_pid => $server) {
                         $p = posix_kill($worker_pid, SIGTERM);
-                        var_dump($p);
                     }
                     break;
             }
