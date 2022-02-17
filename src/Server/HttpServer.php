@@ -48,7 +48,7 @@ class HttpServer extends Server implements ServerInter
             swoole_set_process_name('spring-php.Manager');
         });
 
-        $http->on('request', function ($request, $response) use ($http, $config) {
+        $http->on('request', function (\Swoole\Http\Request $request, $response) use ($http, $config) {
             try {
                 $result = Dispatcher::init(new RequestHttp($request, $http, $this->swoole_process, $config), $response);
             } catch (\Exception $e) {

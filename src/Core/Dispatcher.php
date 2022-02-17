@@ -33,6 +33,7 @@ class Dispatcher
      * 初始化
      * @param $request
      * @param $response
+     * @return string
      */
     public static function init($request, $response)
     {
@@ -76,7 +77,15 @@ class Dispatcher
                 $errorPageArr = SpringContext::$app->getConfig('error_page');
                 if (!empty($errorPageArr[0]) && class_exists($errorPageArr[0])) {
                     $controllerClass = $errorPageArr[0];
+                    /**
+                     * @var Controller $obj
+                     */
                     $obj = new $controllerClass();
+                    $obj->init($this->request, $this->response);
+                    if (!$obj->beforeAction($action)) {
+                        $this->response->setStatusCode(403);
+                        return '';
+                    }
                     $action = isset($errorPageArr[1]) ? $errorPageArr[1] : '';
                     if (empty($action) || !method_exists($obj, $action)) {
                         return '404';
@@ -89,6 +98,10 @@ class Dispatcher
              * @var Controller $obj
              */
             $obj->init($this->request, $this->response);
+            if (!$obj->beforeAction($action)) {
+                $this->response->setStatusCode(403);
+                return '';
+            }
             $response = $obj->$action();
             if (is_string($response)) {
                 return $response;

@@ -57,14 +57,8 @@ LOGO;
         static::$masterPid = posix_getpid();
         @file_put_contents($pid_file, static::$masterPid);
         foreach ($servers as $index => $serverConfig) {
-            if (static::$masterPid !== posix_getpid()) {
-                exit(0);
-            }
             $serverConfig['index'] = $index;  //索引
             static::swooleCreateOneWorker($serverConfig);
-        }
-        if (static::$masterPid !== posix_getpid()) {
-            exit(0);
         }
         @cli_set_process_title('spring-php');
         Command::signalHandlerRegister();  //主进程信号注册
@@ -81,7 +75,7 @@ LOGO;
                     break;
             }
         });
-        $process->name('spring-php listen:' . $serverConfig['host'] . ':' . $serverConfig['port']);
+        $process->name('spring-php.Manager');
         $pid = $process->start();
         self::$workers[(int)$pid] = $serverConfig;
     }

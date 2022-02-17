@@ -9,7 +9,11 @@ interface RequestInter
     /**
      * @return \Swoole\Server
      */
-    public function getServer();
+    public function managerServer();
+
+    public function header();
+
+    public function server();
 
     public function get($key, $default = '');
 
@@ -33,4 +37,10 @@ interface RequestInter
     public function getConfig();
 
     public function getModuleName();
+
+    /**
+     * 请求模式
+     * @return string
+     */
+    public function method();
 }

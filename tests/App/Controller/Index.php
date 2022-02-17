@@ -23,7 +23,7 @@ class Index extends Controller
         /*     $task_id = $this->request->getServer()->task(serialize(new HelloWordTask([
                  'msg' => 'HelloWordTask'
              ])));*/
-        $task_id = $this->request->getServer()->task(new HelloWordTask([
+        $task_id = $this->request->managerServer()->task(new HelloWordTask([
             'msg' => 'HelloWordTask'
         ]));
         return ['msg' => 'hello12', 'task_id' => $task_id];
@@ -41,25 +41,23 @@ class Index extends Controller
     public function getContent()
     {
 
-        return ['msg' => var_export($this->request->getContent(), true)];
+        return ['msg' => $this->request->getContent()];
     }
 
     public function rawContent()
     {
-
-        return ['msg' => var_export($this->request->rawContent(), true)];
+        return ['msg' => $this->request->rawContent()];
     }
 
     public function get()
     {
-
-        return ['msg' => var_export($this->request->get('id', 0), true)];
+        return ['msg' => $this->request->get('id', 0)];
     }
 
     public function post()
     {
 
-        return ['msg' => var_export($this->request->post('id', 0), true)];
+        return ['msg' => $this->request->post('id', 0)];
     }
 
     public function put()

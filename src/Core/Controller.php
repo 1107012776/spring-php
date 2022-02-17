@@ -22,6 +22,11 @@ abstract class Controller
         $this->response = $response;
     }
 
+    public function beforeAction($action = '')
+    {
+        return true;
+    }
+
     public function responseCode($code = 200)
     {
         $this->response->setStatusCode($code);

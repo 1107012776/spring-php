@@ -6,9 +6,8 @@ use SpringPHP\Inter\RequestInter;
 
 class RequestHttp implements RequestInter
 {
-
-
     /**
+     * https://wiki.swoole.com/#/http_server?id=httprequest
      * @var \Swoole\Http\Request
      */
     protected $request;
@@ -78,10 +77,20 @@ class RequestHttp implements RequestInter
         return $this->request->server['request_uri'];
     }
 
+    public function header()
+    {
+        return $this->request->header;
+    }
+
+    public function server()
+    {
+        return $this->request->server;
+    }
+
     /**
      * @return \Swoole\Server
      */
-    public function getServer()
+    public function managerServer()
     {
         return $this->serv;
     }
@@ -99,5 +108,10 @@ class RequestHttp implements RequestInter
     public function getModuleName()
     {
         return empty($this->config['module_name']) ? '' : $this->config['module_name'];
+    }
+
+    public function method()
+    {
+        return $this->request->server['request_method'];
     }
 }

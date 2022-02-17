@@ -132,7 +132,7 @@ class Render
     {
         $socket = new \Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $retval = $socket->connect($runtime_path."/spring-php-render-worker-" . ($this->port + $id) . ".sock");
+        $retval = $socket->connect($runtime_path . "/spring-php-render-worker-" . ($this->port + $id) . ".sock");
         $str = '';
         $socket->send(Protocol::pack(serialize($requestData)));
         while ($retval) {

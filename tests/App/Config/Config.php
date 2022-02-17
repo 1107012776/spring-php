@@ -22,7 +22,7 @@ return [
                 'count' => 3
             ],
             'crontab' => [
-                'open' => false,
+                'open' => true,
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,
