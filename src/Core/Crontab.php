@@ -5,13 +5,12 @@ namespace SpringPHP\Core;
 use SpringPHP\Component\Singleton;
 
 use Swoole\Server;
-use Swoole\Timer;
 
 class Crontab
 {
     use Singleton;
     private $config; //serverConfig
-    private $count = 1;
+    private $count = 1; //强制只有一个定时任务进程，多个暂时不支持
 
     function attachServer(Server $server, $config = [])
     {
@@ -29,9 +28,13 @@ class Crontab
 
     public function restartWorker()
     {
+        $open = SpringContext::config('servers.' . $this->config['index'] . '.crontab.open', false);
+        if (empty($open)) {
+            return false;
+        }
         $runtime_path = SpringContext::config('settings.runtime_path');
         $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
-        file_put_contents($file, time());
+        file_put_contents($file, date('Y-m-d H:i:s', time()).PHP_EOL);
         return true;
     }
 

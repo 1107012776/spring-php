@@ -2,7 +2,6 @@
 
 namespace SpringPHP\Server;
 
-use SpringPHP\Core\Crontab;
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\TaskInter;
@@ -59,7 +58,6 @@ class HttpServer extends Server implements ServerInter
 
         //处理异步任务(此回调函数在task进程中执行)
         $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
-            echo "New AsyncTask[id={$task_id}]" . PHP_EOL;
             $obj = is_object($data) ? $data : unserialize($data);
             if (is_object($obj) && $obj instanceof TaskInter) {
                 try {
@@ -80,7 +78,6 @@ class HttpServer extends Server implements ServerInter
         });
         //处理异步任务的结果(此回调函数在worker进程中执行)
         $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
-            echo "AsyncTask[{$task_id}] Finish start: {$data}" . PHP_EOL;
             $obj = unserialize($data);
             if (is_object($obj) && $obj instanceof TaskInter) {
                 try {
@@ -94,7 +91,6 @@ class HttpServer extends Server implements ServerInter
                 }
             }
             $data = serialize($obj);
-            echo "AsyncTask[{$task_id}] Finish end: {$data}" . PHP_EOL;
         });
         $this->renderInit($this->port, $config);
         $http->start();

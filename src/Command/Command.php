@@ -102,7 +102,6 @@ class Command
     {
         declare(ticks=1)
         $signal_handler = function ($signal) {
-            echo "signal=" . $signal . " " . date("Y-m-d H:i:s", time()) . PHP_EOL;
             file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', "signal=" . $signal . " " . date("Y-m-d H:i:s", time()) . PHP_EOL, FILE_APPEND);
             switch ($signal) {
                 case SIGUSR2:

@@ -95,7 +95,7 @@ LOGO;
             //暂停执行当前进程，直到孩子退出，直到信号被传送
             $res = \Swoole\Process::wait(true);
             //array('code' => 0, 'pid' => 15001)
-            echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL;
+//            echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL;
             file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL, FILE_APPEND);
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
