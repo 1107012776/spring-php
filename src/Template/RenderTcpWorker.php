@@ -96,19 +96,21 @@ class RenderTcpWorker
                     }
                     self::$allSockets[(int)$new_socket] = $new_socket;
                 } else {
-                    $string = fread($socket, 20480);
-                    if ($string === '' || $string === false) {  //客户端已经退出了
+                    Render::getInstance()->controlAccept(function () use ($socket) {
+                        $string = fread($socket, 20480);
+                        if ($string === '' || $string === false) {  //客户端已经退出了
+                            $this->closeSocket($socket);
+                            return;
+                        }
+                        $data = $this->request($string);
+                        $num = fwrite($socket, $data);
+                        /*                   if ($num == 0) {
+                                               echo "WRITE ERROR:" . "\n";
+                                           } else {
+                                               echo "request already succeed\n";
+                                           }*/
                         $this->closeSocket($socket);
-                        continue;
-                    }
-                    $data = $this->request($string);
-                    $num = fwrite($socket, $data);
-                    /*                   if ($num == 0) {
-                                           echo "WRITE ERROR:" . "\n";
-                                       } else {
-                                           echo "request already succeed\n";
-                                       }*/
-                    $this->closeSocket($socket);
+                    });
                 }
             }
         }

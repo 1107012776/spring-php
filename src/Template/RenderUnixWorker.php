@@ -58,7 +58,9 @@ class RenderUnixWorker
                 if (!$client) {
                     return;
                 }
-                $this->accept($client);
+                Render::getInstance()->controlAccept(function () use ($client) {
+                    $this->accept($client);
+                });
             }
         });
         \Swoole\Event::wait();

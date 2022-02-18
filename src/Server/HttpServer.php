@@ -92,7 +92,7 @@ class HttpServer extends Server implements ServerInter
             }
             $data = serialize($obj);
         });
-        $this->renderInit($this->port, $config);
+        $this->init($this->port, $config);
         $http->start();
     }
 

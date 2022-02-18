@@ -22,6 +22,8 @@ class RequestHttp implements RequestInter
 
     protected $config = [];
 
+    protected $params = [];
+
     public function __construct(
         \Swoole\Http\Request $request,
         \Swoole\Server $serv = null,
@@ -43,6 +45,21 @@ class RequestHttp implements RequestInter
     public function post($key, $default = '')
     {
         return !empty($this->request->post[$key]) ? $this->request->post[$key] : $default;
+    }
+
+    public function params($key, $default = '')
+    {
+        return !empty($this->params[$key]) ? $this->params[$key] : $default;
+    }
+
+    public function setParams($params = [])
+    {
+        return $this->params = $params;
+    }
+
+    public function addParams($params = [])
+    {
+        return $this->params = array_merge($this->params, $params);
     }
 
     public function getContent()

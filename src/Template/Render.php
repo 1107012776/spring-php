@@ -8,8 +8,8 @@ namespace SpringPHP\Template;
 
 use SpringPHP\Component\Singleton;
 
-use SpringPHP\Core\Crontab;
 use SpringPHP\Core\SpringContext;
+use Swoole\Coroutine;
 use Swoole\Server;
 use SpringPHP\Component\Protocol;
 
@@ -22,6 +22,22 @@ class Render
     private $config; //serverConfig
     const SOCKET_UNIX = 'UNIX';
     const SOCKET_TCP = 'TCP';
+
+    /**
+     * 控制Accept是否协程异步
+     * @param $func
+     */
+    public function controlAccept(callable $func)
+    {
+        $isAsyn = SpringContext::config('servers.' . $this->config['index'] . '.template.asynchronous', false);
+        if ($isAsyn) { //smarty模板协程不安全，请勿开启异步
+            Coroutine::create(function () use ($func) {
+                $func();
+            });
+        } else {
+            $func();
+        }
+    }
 
     public function trigger($tpl)
     {

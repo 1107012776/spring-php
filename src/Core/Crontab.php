@@ -34,7 +34,7 @@ class Crontab
         }
         $runtime_path = SpringContext::config('settings.runtime_path');
         $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
-        file_put_contents($file, date('Y-m-d H:i:s', time()).PHP_EOL);
+        file_put_contents($file, date('Y-m-d H:i:s', time()) . PHP_EOL);
         return true;
     }
 

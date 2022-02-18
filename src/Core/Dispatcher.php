@@ -4,6 +4,7 @@ namespace SpringPHP\Core;
 
 use SpringPHP\Component\SimpleAutoload;
 use SpringPHP\Request\RequestHttp;
+use SpringPHP\Route\Router;
 
 class Dispatcher
 {
@@ -50,7 +51,20 @@ class Dispatcher
     {
         $uri = $request->getUri();
         $arr = explode('?', $uri);
-        $this->routing = $arr[0];
+        /**
+         * @var Router $router
+         */
+        $router = SpringContext::config('router');
+        if (!empty($router)) {
+            if ($resRoute = $router->match($arr[0], $request->method())) {
+                $params = $resRoute->getParams();
+                $request->setParams($params);
+                $this->routing = $resRoute->getStorage();
+            }
+        }
+        if (empty($this->routing)) {
+            $this->routing = $arr[0];
+        }
         $config = $request->getConfig();
         $this->module_name = empty($config['module_name']) ? '' : $config['module_name'];
         $this->queryString = isset($arr[1]) ? $arr[1] : '';
@@ -58,6 +72,11 @@ class Dispatcher
 
     public function bootstrap()
     {
+        $this->response->setHeader('Content-Type', 'text/html;charset=UTF-8');
+        if (is_callable($this->routing)) {
+            $routingCallBack = $this->routing;
+            return $routingCallBack($this->request, $this->response);
+        }
         $arr = explode('/', $this->routing);
         $controller = $this->controller = !empty($arr[1]) ? $arr[1] : 'Index';
         $action = $this->action = !empty($arr[2]) ? $arr[2] : 'index';
@@ -68,7 +87,6 @@ class Dispatcher
             ]);
             $fix = 'App\\' . $this->module_name . '\\Controller\\';
         }
-        $this->response->setHeader('Content-Type', 'text/html;charset=UTF-8');
         if (!empty($controller) && !empty($action)) {
             $controllerClass = $fix . $controller;
             class_exists($controllerClass) && $obj = new $controllerClass();

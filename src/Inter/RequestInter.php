@@ -19,6 +19,8 @@ interface RequestInter
 
     public function post($key, $default = '');
 
+    public function params($key, $default = '');
+
     //获取包含请求头和内容的
     public function getData();
 

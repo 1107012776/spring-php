@@ -13,7 +13,7 @@ class Index extends Controller
     public function index()
     {
         return Render::getInstance()->render("Index/index", [
-            'msg' => 13123123
+            'msg' => 13123123 . ' id=' . $this->request->params('id', 'null')
         ]);
     }
 

@@ -19,18 +19,19 @@ return [
                     $smarty = new \App\Template\Smarty();
                     return $smarty->render($tpl['template'], $tpl['data'], $tpl['options']);
                 },
-                'count' => 3
+                'count' => 3,
+                'asynchronous' => false, //smarty 模板这边必须设置为false,因为smarty协程不安全
             ],
             'crontab' => [
                 'open' => true,
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,
-                        'ms' => 30000
+                        'ms' => 300000
                     ],
                     [
                         'class' => \App\Timer\SecondTimer::class,
-                        'ms' => 50000
+                        'ms' => 500000
                     ],
                 ]
             ]

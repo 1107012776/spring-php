@@ -34,6 +34,16 @@ class SpringContext
         $configPath = SPRINGPHP_ROOT . "/App/Config/Config.php";
         $config = include($configPath);
         \SpringPHP\Core\SpringContext::$app->merge($config);
+        //加载路由配置
+        $localRouteConfigPath = SPRINGPHP_ROOT . "/App/Config/Route.php";
+        if (file_exists($localRouteConfigPath)) {
+            $routeConfig = include($localRouteConfigPath);
+        } else {
+            $routeConfig = [];
+        }
+        \SpringPHP\Core\SpringContext::$app->merge([
+            'router' => $routeConfig
+        ]);
     }
 
     protected function __construct($config)

@@ -3,6 +3,7 @@
 namespace SpringPHP\Server;
 
 use SpringPHP\Core\Crontab;
+use SpringPHP\Core\ManagerServer;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Template\Render;
 
@@ -37,8 +38,15 @@ class Server
         ]);
     }
 
-    public function renderInit($port, $config)
+    /**
+     * 初始化赋值server启动之前
+     * @param $port
+     * @param $config
+     */
+    public function init($port, $config)
     {
+        ManagerServer::getInstance()->setServerConfig($config);
+        ManagerServer::getInstance()->setServer($this->serv);
         Render::getInstance()->attachServer($this->serv, $port, $config);
         Crontab::getInstance()->attachServer($this->serv, $config);
     }
