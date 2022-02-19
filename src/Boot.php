@@ -4,6 +4,7 @@ namespace SpringPHP;
 
 
 use SpringPHP\Command\Command;
+use SpringPHP\Component\Logger;
 use SpringPHP\Core\SpringContext;
 
 //swoole_process::wait
@@ -94,9 +95,7 @@ LOGO;
             // Suspends execution of the current process until a child has exited, or until a signal is delivered
             //暂停执行当前进程，直到孩子退出，直到信号被传送
             $res = \Swoole\Process::wait(true);
-            //array('code' => 0, 'pid' => 15001)
-//            echo date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL;
-            file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', date('Y-m-d H:i:s', time()) . ' current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true) . PHP_EOL, FILE_APPEND);
+            Logger::getInstance()->log('current parent_pid=' . posix_getpid() . ' exit worker pid=' . var_export($res, true));
             // Calls signal handlers for pending signals again. //再次呼叫待处理信号的信号处理程序。
             pcntl_signal_dispatch();
             // If a child has already exited. 如果一个孩子已经退出了。
@@ -112,12 +111,12 @@ LOGO;
                 }
             } elseif (empty($res)) {
                 exit(0);
-            } else {
-                /* // If shutdown state and all child processes exited then master process exit.
+            } /*else {
+                 // If shutdown state and all child processes exited then master process exit.
                  if (self::$_status === self::STATUS_SHUTDOWN && !self::getAllWorkerPids()) {
                      self::exitAndClearAll();
-                 }*/
-            }
+                 }
+            }*/
         }
     }
 }

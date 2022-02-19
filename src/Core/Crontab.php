@@ -11,9 +11,10 @@ class Crontab
     use Singleton;
     private $config; //serverConfig
     private $count = 1; //强制只有一个定时任务进程，多个暂时不支持
-
+    private $startTime = 0;
     function attachServer(Server $server, $config = [])
     {
+        $this->startTime = time();
         $this->config = $config;
         $open = SpringContext::config('servers.' . $config['index'] . '.crontab.open', false);
         if (empty($open)) {
@@ -28,6 +29,10 @@ class Crontab
 
     public function restartWorker()
     {
+        if($this->startTime+60 > time()){  //60秒内不可重复
+           return false;
+        }
+        $this->startTime = time();
         $open = SpringContext::config('servers.' . $this->config['index'] . '.crontab.open', false);
         if (empty($open)) {
             return false;
@@ -58,22 +63,29 @@ class Crontab
                 ]);
                 $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
                 $timerArr = [];
-                foreach ($list as $val) {
-                    $timer_id = \Swoole\Timer::tick($val['ms'], function ($timer) use ($val, &$timer_id, &$timerArr) {
+                foreach ($list as $index => $item) {
+                    $list[$index]['nextExecTime'] = date('Y-m-d H:i:s', time());
+                    $timer_id = \Swoole\Timer::tick($item['ms'], function ($timer) use (&$list, $index, &$timer_id, &$timerArr) {
+                        $item = &$list[$index];
                         /**
                          * @var \SpringPHP\Inter\TimerInter $obj
                          */
-                        $class = $val['class'];
+                        $class = $item['class'];
                         if (!class_exists($class)) {
                             unset($timerArr[$timer_id]);
                             \Swoole\Timer::clear($timer_id);
                             return;
                         }
-                        $obj = new $class($val);
-                        $response = $obj->run();
-                        if (!empty($response)) {
-                            echo is_string($response) ? $response : var_export($response, true) . PHP_EOL;
+                        $obj = new $class($item);
+                        $obj->init($item);  //初始化
+                        if (!$obj->validate($item)) {
+                            return;
                         }
+                        var_dump('定时验证成功',$item);
+                        $response = $obj->run();
+                        /*                        if ($obj->isSuccess()) {
+                                                    echo is_string($response) ? $response : var_export($response, true) . PHP_EOL;
+                                                }*/
                     });
                     $timerArr[$timer_id] = $timer_id;
                 }

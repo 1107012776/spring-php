@@ -16,7 +16,8 @@ use SpringPHP\Component\Protocol;
 class Render
 {
     use Singleton;
-    private $renderWorker = [];
+    private $socketType = self::SOCKET_UNIX;
+    private $isOpenWork = false;
     private $count = 2;
     private $port = 50000;
     private $config; //serverConfig
@@ -61,21 +62,20 @@ class Render
         foreach ($list as $p) {
             $server->addProcess($p);
         }
+        $this->isOpenWork = true;
         return true;
     }
 
     function render($template = '', $data = [], $options = [])
     {
-        if (empty($this->renderWorker)) {
+        if (empty($this->isOpenWork)) {
             return '';
         }
         /*
          * 随机找一个进程
          */
-        mt_srand();
         $id = mt_rand(1, $this->count);
-        $processEnd = end($this->renderWorker);
-        if ($processEnd['socketType'] == Render::SOCKET_UNIX) {
+        if ($this->socketType == Render::SOCKET_UNIX) {
             $res = $this->unixRender($id, [
                 'template' => $template,
                 'data' => $data,
@@ -94,12 +94,11 @@ class Render
 
     public function restartWorker()
     {
-        if (empty($this->renderWorker)) {
+        if (empty($this->isOpenWork)) {
             return false;
         }
-        $processEnd = end($this->renderWorker);
         for ($i = 1; $i <= $this->count; $i++) {
-            if ($processEnd['socketType'] == Render::SOCKET_UNIX) {
+            if ($this->socketType == Render::SOCKET_UNIX) {
                 $this->unixRestartRender($i, [
                     'cmd' => 'restart'
                 ]);
@@ -114,7 +113,7 @@ class Render
 
     protected function __generateWorkerProcess($config = []): array
     {
-        $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socket_type', Render::SOCKET_UNIX);
+        $this->socketType = $socketType = SpringContext::config('servers.' . $config['index'] . '.template.socket_type', Render::SOCKET_UNIX);
         $this->count = SpringContext::config('servers.' . $config['index'] . '.template.count', 2);
         $array = [];
         $ip = "0.0.0.0";
@@ -133,11 +132,6 @@ class Render
                 }
             });
             $process->name('worker');
-            $this->renderWorker[$i] = [
-                'socketType' => $socketType,
-                'ip' => $ip,
-                'id' => $port + $i,
-            ];
             $array[$i] = $process;
         }
         return $array;

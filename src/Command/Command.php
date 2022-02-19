@@ -102,7 +102,7 @@ class Command
     {
         declare(ticks=1)
         $signal_handler = function ($signal) {
-            file_put_contents(SpringContext::config('settings.runtime_path') . '/system' . date('Ymd') . '.log', "signal=" . $signal . " " . date("Y-m-d H:i:s", time()) . PHP_EOL, FILE_APPEND);
+            \SpringPHP\Component\Logger::getInstance()->log("信号处理 signal=" . $signal);
             switch ($signal) {
                 case SIGUSR2:
                     foreach (Boot::$workers as $worker_pid => $server) {

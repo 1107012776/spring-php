@@ -27,11 +27,11 @@ return [
                 'list' => [
                     [
                         'class' => \App\Timer\FirstTimer::class,
-                        'ms' => 300000
+                        'ms' => 100
                     ],
                     [
                         'class' => \App\Timer\SecondTimer::class,
-                        'ms' => 500000
+                        'ms' => 1000
                     ],
                 ]
             ]

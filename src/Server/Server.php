@@ -3,9 +3,10 @@
 namespace SpringPHP\Server;
 
 use SpringPHP\Core\Crontab;
+use SpringPHP\Template\Render;
 use SpringPHP\Core\ManagerServer;
 use SpringPHP\Core\SpringContext;
-use SpringPHP\Template\Render;
+
 
 class Server
 {
@@ -52,26 +53,6 @@ class Server
     }
 
 
-    /**
-     *
-     * 每个worker启动的时候
-     * @param \Swoole\Server $serv
-     */
-    public function onWorkerStart(\Swoole\Server $serv, $worker_id)
-    {
-        Server::workerStart();
-        if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
-        } else {
-            swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
-        }
-        if ($worker_id == 0) { //重启RenderWorker Crontab
-            \Swoole\Coroutine::create(function () {
-                Render::getInstance()->restartWorker();
-                Crontab::getInstance()->restartWorker();
-            });
-        }
-    }
 
     public static function start($config = [])
     {
