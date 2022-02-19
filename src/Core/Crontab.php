@@ -81,7 +81,6 @@ class Crontab
                         if (!$obj->validate($item)) {
                             return;
                         }
-                        var_dump('定时验证成功',$item);
                         $response = $obj->run();
                         /*                        if ($obj->isSuccess()) {
                                                     echo is_string($response) ? $response : var_export($response, true) . PHP_EOL;
