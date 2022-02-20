@@ -53,7 +53,6 @@ class Server
     }
 
 
-
     public static function start($config = [])
     {
         return new static($config);

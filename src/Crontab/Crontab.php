@@ -1,8 +1,9 @@
 <?php
 
-namespace SpringPHP\Core;
+namespace SpringPHP\Crontab;
 
 use SpringPHP\Component\Singleton;
+use SpringPHP\Core\SpringContext;
 
 use Swoole\Server;
 
@@ -12,6 +13,7 @@ class Crontab
     private $config; //serverConfig
     private $count = 1; //强制只有一个定时任务进程，多个暂时不支持
     private $startTime = 0;
+
     function attachServer(Server $server, $config = [])
     {
         $this->startTime = time();
@@ -29,8 +31,8 @@ class Crontab
 
     public function restartWorker()
     {
-        if($this->startTime+60 > time()){  //60秒内不可重复
-           return false;
+        if ($this->startTime + 60 > time()) {  //60秒内不可重复
+            return false;
         }
         $this->startTime = time();
         $open = SpringContext::config('servers.' . $this->config['index'] . '.crontab.open', false);

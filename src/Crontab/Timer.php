@@ -1,14 +1,16 @@
 <?php
 
-namespace SpringPHP\Core;
+namespace SpringPHP\Crontab;
 abstract class Timer
 {
     public $data;
     public $ms = 0;  //毫秒
     protected $response;
     protected $success = false;
-    public function init(&$item){
-        if(!empty($item['initialization'])){
+
+    public function init(&$item)
+    {
+        if (!empty($item['initialization'])) {
             return false;
         }
         $item['initialization'] = true;

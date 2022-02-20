@@ -2,7 +2,7 @@
 
 namespace App\Timer;
 
-use SpringPHP\Core\Timer;
+use SpringPHP\Crontab\Timer;
 use SpringPHP\Inter\TimerInter;
 
 class FirstTimer extends Timer implements TimerInter
