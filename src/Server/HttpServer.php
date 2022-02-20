@@ -7,7 +7,7 @@ use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
-use SpringPHP\Core\Crontab;
+use SpringPHP\Crontab\Crontab;
 use SpringPHP\Template\Render;
 
 //https://www.kancloud.cn/yiyanan/swoole/980197

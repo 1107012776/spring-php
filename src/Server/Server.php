@@ -2,7 +2,7 @@
 
 namespace SpringPHP\Server;
 
-use SpringPHP\Core\Crontab;
+use SpringPHP\Crontab\Crontab;
 use SpringPHP\Template\Render;
 use SpringPHP\Core\ManagerServer;
 use SpringPHP\Core\SpringContext;
