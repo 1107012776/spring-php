@@ -11,7 +11,7 @@ abstract class Controller
      */
     protected $request;
     /**
-     * @var \Swoole\Http\Response
+     * @var \SpringPHP\Inter\ResponseInter
      */
     protected $response;
 
@@ -29,6 +29,6 @@ abstract class Controller
 
     public function responseCode($code = 200)
     {
-        $this->response->setStatusCode($code);
+        !empty($this->response) && $this->response->setStatusCode($code);
     }
 }

@@ -10,6 +10,8 @@ use SpringPHP\Core\SpringContext;
 
 class Server
 {
+    public $port;
+    public $host;
     const SERVER_HTTP = 1;  //http
     const SERVER_WEBSOCKET = 2;  //webSocket
     const SERVER_SOCKET = 3;  //普通tcp socket
@@ -52,6 +54,26 @@ class Server
         Crontab::getInstance()->attachServer($this->serv, $config);
     }
 
+    /**
+     *
+     * 每个worker启动的时候
+     * @param \Swoole\Server $serv
+     */
+    public function onWorkerStart(\Swoole\Server $serv, $worker_id)
+    {
+        Server::workerStart();
+        if ($worker_id >= $serv->setting['worker_num']) {
+            swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
+        } else {
+            swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
+        }
+        if ($worker_id == 0) { //重启RenderWorker Crontab
+            \Swoole\Coroutine::create(function () {
+                Render::getInstance()->restartWorker();
+                Crontab::getInstance()->restartWorker();
+            });
+        }
+    }
 
     public static function start($config = [])
     {

@@ -6,14 +6,13 @@
 </head>
 
 <body>
-_{{$msg}}_{{$module_name}}
 <div id="cc" style="width:500px;">
-    <div id="content" style=" height:50px; overflow:auto; width:100%; border:1px solid #ccc;">
+    <div id="content" style=" height:400px; overflow:auto; width:100%; border:1px solid #ccc;">
 
 
     </div>
     <form id="form">
-        <textarea id="text" style="width:100%; height:50px;"></textarea>
+        <textarea id="text" style="width:100%; height:200px;"></textarea>
         <input type="button" onclick="ab();" value="发送">
     </form>
 </div>
@@ -27,9 +26,9 @@ _{{$msg}}_{{$module_name}}
 <script>
     // var wsServer = 'ws://live.developzhe.com/';
     if(document.location.protocol === 'https:'){
-        var wsServer = 'wss://live.developzhe.com:8397';
+        var wsServer = 'wss://live.developzhe.com/websocket/';
     }else{
-        var wsServer = 'ws://live.developzhe.com:8397';
+        var wsServer = 'ws://live.developzhe.com/websocket/';
     }
 
     var websocket = new WebSocket(wsServer);
@@ -55,9 +54,8 @@ _{{$msg}}_{{$module_name}}
     };
     function ab(){
         var zhi = $('#text').val();
-        var str =  '{"uri":"/Index/index","content":{"name":"'+zhi+'"}}';
+        var str =  '{"class":"Index","action":"test12312321asdasdasdas12312eavl","content":{"name":"'+zhi+'"}}';
         websocket.send(str);
     }
 
 </script>
-<script src="/test.js"></script>

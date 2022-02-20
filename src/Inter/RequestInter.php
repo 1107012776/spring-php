@@ -21,6 +21,8 @@ interface RequestInter
 
     public function params($key, $default = '');
 
+    public function setParams($params = []);
+
     //获取包含请求头和内容的
     public function getData();
 

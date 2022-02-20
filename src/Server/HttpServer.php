@@ -7,14 +7,10 @@ use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
-use SpringPHP\Crontab\Crontab;
-use SpringPHP\Template\Render;
 
 //https://www.kancloud.cn/yiyanan/swoole/980197
 class HttpServer extends Server implements ServerInter
 {
-    public $port;
-    public $host;
 
     public function __construct($config = [])
     {
@@ -98,26 +94,7 @@ class HttpServer extends Server implements ServerInter
         $http->start();
     }
 
-    /**
-     *
-     * 每个worker启动的时候
-     * @param \Swoole\Server $serv
-     */
-    public function onWorkerStart(\Swoole\Server $serv, $worker_id)
-    {
-        Server::workerStart();
-        if ($worker_id >= $serv->setting['worker_num']) {
-            swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
-        } else {
-            swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
-        }
-        if ($worker_id == 0) { //重启RenderWorker Crontab
-            \Swoole\Coroutine::create(function () {
-                Render::getInstance()->restartWorker();
-                Crontab::getInstance()->restartWorker();
-            });
-        }
-    }
+
 
 
 }

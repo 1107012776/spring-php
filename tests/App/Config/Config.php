@@ -88,6 +88,18 @@ return [
                 ]
             ]
         ],
+        [
+            'module_name' => 'WebSocket',
+            'type' => Server::SERVER_WEBSOCKET,
+            'host' => '0.0.0.0',
+            'port' => 8397,
+        ],
+        [
+            'module_name' => 'WebSocket',
+            'type' => Server::SERVER_SOCKET,
+            'host' => '0.0.0.0',
+            'port' => 8497,
+        ]
     ],
     'settings' => [
         'enable_coroutine' => true,

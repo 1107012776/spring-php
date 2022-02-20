@@ -74,9 +74,15 @@ LOGO;
                 case \SpringPHP\Server\Server::SERVER_HTTP:
                     \SpringPHP\Server\HttpServer::start($serverConfig);
                     break;
+                case \SpringPHP\Server\Server::SERVER_WEBSOCKET:
+                    \SpringPHP\Server\WebSocketServer::start($serverConfig);
+                    break;
+                case \SpringPHP\Server\Server::SERVER_SOCKET:
+                    \SpringPHP\Server\TcpSocketServer::start($serverConfig);
+                    break;
             }
         });
-        $process->name('spring-php.Manager');
+        $process->name('worker');
         $pid = $process->start();
         self::$workers[(int)$pid] = $serverConfig;
     }

@@ -3,8 +3,13 @@
 namespace SpringPHP\Core;
 
 use SpringPHP\Component\SimpleAutoload;
+use SpringPHP\Inter\RequestInter;
 use SpringPHP\Request\RequestHttp;
+use SpringPHP\Request\RequestWebSocket;
+use SpringPHP\Request\RequestSocket;
+use SpringPHP\Response\SocketResponse;
 use SpringPHP\Route\Router;
+use Swoole\Http\Response;
 
 class Dispatcher
 {
@@ -15,7 +20,7 @@ class Dispatcher
     protected $request;
     protected $module_name = '';
     /**
-     * @var \Swoole\Http\Response
+     * @var \SpringPHP\Inter\ResponseInter
      */
     protected $response;
 
@@ -43,11 +48,22 @@ class Dispatcher
         $dis->response = $response;
         if ($request instanceof RequestHttp) {
             $dis->http($request);
+            return $dis->bootstrap();
         }
-        return $dis->bootstrap();
+        if ($request instanceof RequestWebSocket) {
+            $dis->http($request);
+            return $dis->bootstrap();
+        }
+
+        if ($request instanceof RequestSocket) {
+            $dis->http($request);
+            return $dis->bootstrap();
+        }
+        return '';
     }
 
-    protected function http(RequestHttp $request)
+
+    protected function http(RequestInter $request)
     {
         $uri = $request->getUri();
         $arr = explode('?', $uri);
@@ -70,9 +86,12 @@ class Dispatcher
         $this->queryString = isset($arr[1]) ? $arr[1] : '';
     }
 
+
     public function bootstrap()
     {
-        $this->response->setHeader('Content-Type', 'text/html;charset=UTF-8');
+        if (!empty($this->response) && get_class($this->response) == Response::class) {
+            $this->response->setHeader('Content-Type', 'text/html;charset=UTF-8');
+        }
         if (is_callable($this->routing)) {
             $routingCallBack = $this->routing;
             return $routingCallBack($this->request, $this->response);
@@ -91,7 +110,12 @@ class Dispatcher
             $controllerClass = $fix . $controller;
             class_exists($controllerClass) && $obj = new $controllerClass();
             if (empty($obj) || !method_exists($obj, $action)) {
-                $this->response->setStatusCode(404);
+                if (!empty($this->response) && get_class($this->response) == Response::class) {
+                    $this->response->setStatusCode(404);
+                } elseif (!empty($this->response) && $this->response instanceof SocketResponse) {
+                    $response = ['code' => 404];
+                    return json_encode($response, JSON_UNESCAPED_UNICODE);
+                }
                 $errorPageArr = SpringContext::$app->getConfig('error_page');
                 if (!empty($errorPageArr[0]) && class_exists($errorPageArr[0])) {
                     $controllerClass = $errorPageArr[0];
@@ -101,14 +125,26 @@ class Dispatcher
                     $obj = new $controllerClass();
                     $obj->init($this->request, $this->response);
                     if (!$obj->beforeAction($action)) {
-                        $this->response->setStatusCode(403);
-                        return '';
+                        if (!empty($this->response) && get_class($this->response) == Response::class) {
+                            $this->response->setStatusCode(403);
+                        } elseif (!empty($this->response) && $this->response instanceof SocketResponse) {
+                            $response = ['code' => 403];
+                            return json_encode($response, JSON_UNESCAPED_UNICODE);
+                        }
                     }
                     $action = isset($errorPageArr[1]) ? $errorPageArr[1] : '';
                     if (empty($action) || !method_exists($obj, $action)) {
+                        if (!empty($this->response) && $this->response instanceof SocketResponse) {
+                            $response = ['code' => 404];
+                            return json_encode($response, JSON_UNESCAPED_UNICODE);
+                        }
                         return '404';
                     }
                 } else {
+                    if (!empty($this->response) && $this->response instanceof SocketResponse) {
+                        $response = ['code' => 404];
+                        return json_encode($response, JSON_UNESCAPED_UNICODE);
+                    }
                     return '404';
                 }
             }
@@ -117,14 +153,27 @@ class Dispatcher
              */
             $obj->init($this->request, $this->response);
             if (!$obj->beforeAction($action)) {
-                $this->response->setStatusCode(403);
+                if (!empty($this->response) && get_class($this->response) == Response::class) {
+                    $this->response->setStatusCode(403);
+                } elseif (!empty($this->response) && $this->response instanceof SocketResponse) {
+                    $response = ['code' => 403];
+                    return json_encode($response, JSON_UNESCAPED_UNICODE);
+                }
                 return '';
             }
             $response = $obj->$action();
             if (is_string($response)) {
                 return $response;
             } elseif (is_array($response)) {
-                $this->response->setHeader('Content-Type', 'application/json;charset=UTF-8');
+                if (!empty($this->response) && $this->response instanceof SocketResponse) {
+                    $WebSocketResponse = $this->response;
+                    /**
+                     * @var SocketResponse $WebSocketResponse
+                     */
+                    empty($response['code']) && $response['code'] = $WebSocketResponse->getHttpCode();
+                } elseif (!empty($this->response) && get_class($this->response) == Response::class) {
+                    $this->response->setHeader('Content-Type', 'application/json;charset=UTF-8');
+                }
                 return json_encode($response, JSON_UNESCAPED_UNICODE);
             }
         }
