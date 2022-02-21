@@ -140,11 +140,11 @@ class Dispatcher
             return var_export($result, true);
         }
         if (!empty($response) && $response instanceof SocketResponse) {
-            $WebSocketResponse = $response;
+            $webSocketResponse = $response;
             /**
-             * @var SocketResponse $WebSocketResponse
+             * @var SocketResponse $webSocketResponse
              */
-            empty($result['code']) && $result['code'] = $WebSocketResponse->getHttpCode();
+            empty($result['code']) && $result['code'] = $webSocketResponse->getHttpCode();
         }
         if (!empty($response) && get_class($response) == Response::class) {
             $response->setHeader('Content-Type', 'application/json;charset=UTF-8');
