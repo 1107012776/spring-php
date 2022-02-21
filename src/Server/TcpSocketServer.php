@@ -6,6 +6,7 @@
  * @package https://github.com/1107012776/spring-php
  * @license https://github.com/1107012776/spring-php/blob/main/LICENSE
  */
+
 namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
