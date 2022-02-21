@@ -93,9 +93,7 @@ abstract class Timer
 
     public function validate(&$item)
     {
-        if (!empty($item['nextExecTime'])) {
-            $nextExecTime = strtotime($item['nextExecTime']); //上一次最后执行时间
-        }
+        $nextExecTime = strtotime($item['nextExecTime']); //上一次最后执行时间
         if (time() < $nextExecTime) {
             return false;
         }
@@ -145,7 +143,7 @@ abstract class Timer
         ) {
             return false;
         }
-        $item['nextExecTime'] = date('Y-m-d H:i:s', $nextExecTime);
+        $item['nextExecTime'] = date('Y-m-d H:i:00', $nextExecTime);
         return true;
     }
 
