@@ -11,9 +11,4 @@ interface ResponseInter
 {
     public function setStatusCode($http_code = 200, $reason = null);
 
-    public function setHeader($key, $value, $ucwords = null);
-
-    public function header($key, $value, $ucwords = null);
-
-    public function redirect($location, $http_code = null);
 }

@@ -3,6 +3,7 @@
 namespace SpringPHP\Core;
 
 use SpringPHP\Inter\RequestInter;
+use SpringPHP\Response\SocketResponse;
 
 abstract class Controller
 {
@@ -27,8 +28,58 @@ abstract class Controller
         return true;
     }
 
-    public function responseCode($code = 200)
+    protected function responseCode($code = 200)
     {
-        !empty($this->response) && $this->response->setStatusCode($code);
+        if(empty($this->response)){
+            return false;
+        }
+        if(get_class($this->response) == \Swoole\Http\Response::class){
+            $this->response->setStatusCode($code);
+        }
+        if(get_class($this->response) == SocketResponse::class){
+            $this->response->setStatusCode($code);
+        }
+    }
+
+    protected function setHeader($key, $value, $ucwords = null){
+        if(empty($this->response)){
+            return false;
+        }
+        /**
+         * @var \Swoole\Http\Response $response
+         */
+        $response = $this->response;
+        if(get_class($response) == \Swoole\Http\Response::class){
+            $response->setHeader($key, $value, $ucwords);
+        }
+        return true;
+    }
+
+    protected function header($key, $value, $ucwords = null){
+        if(empty($this->response)){
+            return false;
+        }
+        /**
+         * @var \Swoole\Http\Response $response
+         */
+        $response = $this->response;
+        if(get_class($response) == \Swoole\Http\Response::class){
+            $response->header($key, $value, $ucwords);
+        }
+        return true;
+    }
+
+    protected function redirect($location, $http_code = null){
+        if(empty($this->response)){
+            return false;
+        }
+        /**
+         * @var \Swoole\Http\Response $response
+         */
+        $response = $this->response;
+        if(get_class($response) == \Swoole\Http\Response::class){
+            $response->redirect($location, $http_code);
+        }
+        return true;
     }
 }
