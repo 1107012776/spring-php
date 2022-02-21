@@ -16,12 +16,12 @@ class Crontab
 
     function attachServer(Server $server, $config = [])
     {
-        $this->startTime = time();
         $this->config = $config;
         $open = SpringContext::config('servers.' . $config['index'] . '.crontab.open', false);
         if (empty($open)) {
             return false;
         }
+        $this->startTime = time();
         $list = $this->__generateWorkerProcess($config);
         foreach ($list as $p) {
             $server->addProcess($p);
@@ -31,14 +31,14 @@ class Crontab
 
     public function restartWorker()
     {
-        if ($this->startTime + 20 > time()) {  //20秒内不可重复
-            return false;
-        }
-        $this->startTime = time();
         $open = SpringContext::config('servers.' . $this->config['index'] . '.crontab.open', false);
         if (empty($open)) {
             return false;
         }
+        if ($this->startTime + 20 > time()) {  //20秒内不可重复
+            return false;
+        }
+        $this->startTime = time();
         $runtime_path = SpringContext::config('settings.runtime_path');
         $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
         file_put_contents($file, date('Y-m-d H:i:s', time()) . PHP_EOL);

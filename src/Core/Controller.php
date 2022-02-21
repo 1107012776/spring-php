@@ -30,54 +30,57 @@ abstract class Controller
 
     protected function responseCode($code = 200)
     {
-        if(empty($this->response)){
+        if (empty($this->response)) {
             return false;
         }
-        if(get_class($this->response) == \Swoole\Http\Response::class){
+        if (get_class($this->response) == \Swoole\Http\Response::class) {
             $this->response->setStatusCode($code);
         }
-        if(get_class($this->response) == SocketResponse::class){
+        if (get_class($this->response) == SocketResponse::class) {
             $this->response->setStatusCode($code);
         }
     }
 
-    protected function setHeader($key, $value, $ucwords = null){
-        if(empty($this->response)){
+    protected function setHeader($key, $value, $ucwords = null)
+    {
+        if (empty($this->response)) {
             return false;
         }
         /**
          * @var \Swoole\Http\Response $response
          */
         $response = $this->response;
-        if(get_class($response) == \Swoole\Http\Response::class){
+        if (get_class($response) == \Swoole\Http\Response::class) {
             $response->setHeader($key, $value, $ucwords);
         }
         return true;
     }
 
-    protected function header($key, $value, $ucwords = null){
-        if(empty($this->response)){
+    protected function header($key, $value, $ucwords = null)
+    {
+        if (empty($this->response)) {
             return false;
         }
         /**
          * @var \Swoole\Http\Response $response
          */
         $response = $this->response;
-        if(get_class($response) == \Swoole\Http\Response::class){
+        if (get_class($response) == \Swoole\Http\Response::class) {
             $response->header($key, $value, $ucwords);
         }
         return true;
     }
 
-    protected function redirect($location, $http_code = null){
-        if(empty($this->response)){
+    protected function redirect($location, $http_code = null)
+    {
+        if (empty($this->response)) {
             return false;
         }
         /**
          * @var \Swoole\Http\Response $response
          */
         $response = $this->response;
-        if(get_class($response) == \Swoole\Http\Response::class){
+        if (get_class($response) == \Swoole\Http\Response::class) {
             $response->redirect($location, $http_code);
         }
         return true;

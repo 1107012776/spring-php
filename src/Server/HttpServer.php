@@ -39,12 +39,6 @@ class HttpServer extends Server implements ServerInter
             ]
         );
 
-        $http->on('workerStart', array($this, 'onWorkerStart'));
-
-        $http->on('start', function ($serv) {
-            swoole_set_process_name('spring-php.Manager');
-        });
-
         $http->on('request', function (\Swoole\Http\Request $request, $response) use ($http, $config) {
             try {
                 $result = Dispatcher::init(new RequestHttp($request, $http, $this->swoole_process, $config), $response);
@@ -54,42 +48,6 @@ class HttpServer extends Server implements ServerInter
             $response->end($result);
         });
 
-        //处理异步任务(此回调函数在task进程中执行)
-        $http->on('Task', function (\Swoole\Http\Server $serv, $task_id, $reactor_id, $data) {
-            $obj = is_object($data) ? $data : unserialize($data);
-            if (is_object($obj) && $obj instanceof TaskInter) {
-                try {
-                    $obj->before($task_id);
-                    $obj->run($task_id);
-                    $obj->after($task_id);
-                } catch (\Exception $e) {
-                    $obj->onException($e, [
-                        'serv' => $serv,
-                        'task_id' => $task_id,
-                        'reactor_id' => $reactor_id,
-                        'data' => $data,
-                    ]);
-                }
-            }
-            //返回任务执行的结果
-            $serv->finish(serialize($obj));
-        });
-        //处理异步任务的结果(此回调函数在worker进程中执行)
-        $http->on('Finish', function (\Swoole\Http\Server $serv, $task_id, $data) {
-            $obj = unserialize($data);
-            if (is_object($obj) && $obj instanceof TaskInter) {
-                try {
-                    $obj->finish($task_id);
-                } catch (\Exception $e) {
-                    $obj->onException($e, [
-                        'serv' => $serv,
-                        'task_id' => $task_id,
-                        'data' => $data,
-                    ]);
-                }
-            }
-            $data = serialize($obj);
-        });
         $this->init($this->port, $config);
         $http->start();
     }
