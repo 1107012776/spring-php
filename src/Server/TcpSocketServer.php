@@ -1,6 +1,7 @@
 <?php
 
 namespace SpringPHP\Server;
+
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Inter\ServerInter;
 use SpringPHP\Request\RequestSocket;
@@ -12,7 +13,7 @@ use SpringPHP\Response\SocketResponse;
  * Date: 2022/2/20
  * Time: 12:30
  */
-class TcpSocketServer  extends Server implements ServerInter
+class TcpSocketServer extends Server implements ServerInter
 {
     public $port;
     public $host;
@@ -24,24 +25,24 @@ class TcpSocketServer  extends Server implements ServerInter
         $port = $this->port = $config['port'];
         $this->serv = $server = new \Swoole\Server($host, $port);
 
-         //监听连接进入事件
+        //监听连接进入事件
         $server->on('Connect', function ($server, $fd) {
             echo "Client: Connect.\n";
         });
 
 
-       //监听数据接收事件
+        //监听数据接收事件
         $server->on('Receive', function (\Swoole\Server $server, $fd, $reactor_id, $data) {
-            if(trim($data) == 'quit'){
+            if (trim($data) == 'quit') {
                 $server->send($fd, json_encode([
                     'code' => 200,
                     'msg' => 'quit'
-                ],JSON_UNESCAPED_UNICODE));
+                ], JSON_UNESCAPED_UNICODE));
                 $server->close($fd);
                 return;
             }
             try {
-                $result = Dispatcher::init(new RequestSocket($data, $server , $this->swoole_process, $this->config), new SocketResponse());
+                $result = Dispatcher::init(new RequestSocket($data, $server, $this->swoole_process, $this->config), new SocketResponse());
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
             }

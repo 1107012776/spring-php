@@ -31,7 +31,7 @@ class Crontab
 
     public function restartWorker()
     {
-        if ($this->startTime + 60 > time()) {  //60秒内不可重复
+        if ($this->startTime + 20 > time()) {  //20秒内不可重复
             return false;
         }
         $this->startTime = time();
@@ -63,43 +63,43 @@ class Crontab
                 \SpringPHP\Component\SimpleAutoload::add([
                     'App' => SPRINGPHP_ROOT . '/App'
                 ]);
-                $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
-                $timerArr = [];
-                foreach ($list as $index => $item) {
-                    $list[$index]['nextExecTime'] = date('Y-m-d H:i:s', time());
-                    $timer_id = \Swoole\Timer::tick($item['ms'], function ($timer) use (&$list, $index, &$timer_id, &$timerArr) {
-                        $item = &$list[$index];
-                        /**
-                         * @var \SpringPHP\Inter\TimerInter $obj
-                         */
-                        $class = $item['class'];
-                        if (!class_exists($class)) {
-                            unset($timerArr[$timer_id]);
-                            \Swoole\Timer::clear($timer_id);
-                            return;
-                        }
-                        $obj = new $class($item);
-                        $obj->init($item);  //初始化
-                        if (!$obj->validate($item)) {
-                            return;
-                        }
-                        $response = $obj->run();
-                        /*                        if ($obj->isSuccess()) {
-                                                    echo is_string($response) ? $response : var_export($response, true) . PHP_EOL;
-                                                }*/
-                    });
-                    $timerArr[$timer_id] = $timer_id;
-                }
-                $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id) {
-                    $file = $this->getRestartFile();
-                    if (file_exists($file)) {
-                        unlink($file);
-                        foreach ($timerArr as $value) {
-                            \Swoole\Timer::clear($value);
-                        }
-                        \Swoole\Timer::clear($timer_id);
+                $funcCallback = function () {
+                    $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
+                    $timerArr = [];
+                    foreach ($list as $index => $item) {
+                        $list[$index]['nextExecTime'] = date('Y-m-d H:i:s', time());
+                        $timer_id = \Swoole\Timer::tick($item['ms'], function ($timer) use (&$list, $index, &$timer_id, &$timerArr) {
+                            $item = &$list[$index];
+                            /**
+                             * @var \SpringPHP\Inter\TimerInter $obj
+                             */
+                            $class = $item['class'];
+                            if (!class_exists($class)) {
+                                unset($timerArr[$timer_id]);
+                                \Swoole\Timer::clear($timer_id);
+                                return;
+                            }
+                            $obj = new $class($item);
+                            $obj->init($item);  //初始化
+                            if (!$obj->validate($item)) {
+                                return;
+                            }
+                            $response = $obj->run();
+                        });
+                        $timerArr[$timer_id] = $timer_id;
                     }
-                });
+                    $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id) {
+                        $file = $this->getRestartFile();
+                        if (file_exists($file)) {
+                            unlink($file);
+                            foreach ($timerArr as $value) {
+                                \Swoole\Timer::clear($value);
+                            }
+                            \Swoole\Timer::clear($timer_id);
+                        }
+                    });
+                };
+                \Swoole\Timer::after(60000, $funcCallback);
                 \Swoole\Event::wait();
             });
             $process->name('worker');

@@ -1,4 +1,5 @@
 <?php
+
 namespace SpringPHP\Response;
 /**
  * Created by PhpStorm.
@@ -10,7 +11,9 @@ class SocketResponse
 {
     protected $http_code = 200;
     protected $reason;
-    public function setStatusCode($http_code = 200, $reason = null){
+
+    public function setStatusCode($http_code = 200, $reason = null)
+    {
         $this->http_code = $http_code;
         $this->reason = $reason;
     }

@@ -1,6 +1,7 @@
 <?php
 
 namespace SpringPHP\Server;
+
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Inter\ServerInter;
 use SpringPHP\Request\RequestWebSocket;
@@ -12,7 +13,7 @@ use SpringPHP\Response\SocketResponse;
  * Date: 2022/2/20
  * Time: 12:30
  */
-class WebSocketServer  extends Server implements ServerInter
+class WebSocketServer extends Server implements ServerInter
 {
     public $port;
     public $host;
@@ -25,17 +26,17 @@ class WebSocketServer  extends Server implements ServerInter
         $this->serv = $ws = new \Swoole\WebSocket\Server($host, $port);
 
         //监听WebSocket连接打开事件
-        $ws->on('Open', function (\Swoole\Server $ws,\Swoole\Http\Request $request) {
+        $ws->on('Open', function (\Swoole\Server $ws, \Swoole\Http\Request $request) {
             $ws->push($request->fd, json_encode([
                 'code' => 200,
                 'msg' => 'success'
-            ],JSON_UNESCAPED_UNICODE));
+            ], JSON_UNESCAPED_UNICODE));
         });
 
 //监听WebSocket消息事件
-        $ws->on('Message', function (\Swoole\Server $ws,\Swoole\Websocket\Frame $frame) {
+        $ws->on('Message', function (\Swoole\Server $ws, \Swoole\Websocket\Frame $frame) {
             try {
-                $result = Dispatcher::init(new RequestWebSocket($frame, $ws , $this->swoole_process, $this->config), new SocketResponse());
+                $result = Dispatcher::init(new RequestWebSocket($frame, $ws, $this->swoole_process, $this->config), new SocketResponse());
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
             }
