@@ -14,6 +14,8 @@ php spring-php installDemo  //安装demo案例，可自由删减不需要的部�
 
 composer require smarty/smarty   //demo案例依赖smarty模板来渲染视图
 
+composer require lys/php-sharding-pdo  //MySql数据库中间键
+
 ```
 # 示例（tests目录）
 
