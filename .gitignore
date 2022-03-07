@@ -13,3 +13,4 @@ composer.lock
 bootstrap.php
 Config-Local.php
 tests/unit
+tests/test.sh
