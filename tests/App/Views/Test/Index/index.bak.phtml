@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>socket</title>
+</head>
+
+<body>
+_{{$msg}}_{{$module_name}}
+<div id="cc" style="width:500px;">
+    <div id="content" style=" height:50px; overflow:auto; width:100%; border:1px solid #ccc;">
+
+
+    </div>
+    <form id="form">
+        <textarea id="text" style="width:100%; height:50px;"></textarea>
+        <input type="button" onclick="ab();" value="发送">
+    </form>
+</div>
+<p id="a"></p>
+<script src="https://www.developzhe.com/admin_static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+
+
+
+</body>
+</html>
+<script>
+    // var wsServer = 'ws://live.developzhe.com/';
+    if(document.location.protocol === 'https:'){
+        var wsServer = 'wss://live.developzhe.com:8397';
+    }else{
+        var wsServer = 'ws://live.developzhe.com:8397';
+    }
+
+    var websocket = new WebSocket(wsServer);
+    websocket.onopen = function (evt) {
+        console.log("Connected to WebSocket server.");
+    };
+
+    websocket.onclose = function (e) {
+        console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean);
+        console.log(e);
+        console.log("Disconnected");
+    };
+
+    websocket.onmessage = function (evt) {
+        $('#content').html('<pre>'+evt.data+'</pre>');
+
+        // document.getElementById('div').style.background = evt.data;
+        console.log('Retrieved data from server: ' + evt.data);
+    };
+
+    websocket.onerror = function (evt, e) {
+        console.log('Error occured: ' + evt.data);
+    };
+    function ab(){
+        var zhi = $('#text').val();
+        var str =  '{"uri":"/Index/index","content":{"name":"'+zhi+'"}}';
+        websocket.send(str);
+    }
+
+</script>
+<script src="/test.js"></script>
