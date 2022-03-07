@@ -106,7 +106,8 @@ class Crontab
                         }
                     });
                 };
-                \Swoole\Timer::after(60000, $funcCallback);
+                $after_time = SpringContext::config('servers.' . $this->config['index'] . '.crontab.after_time', 60000);
+                \Swoole\Timer::after($after_time, $funcCallback);
                 \Swoole\Event::wait();
             });
             $process->name('worker');

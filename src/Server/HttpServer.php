@@ -10,8 +10,6 @@
 namespace SpringPHP\Server;
 
 use SpringPHP\Core\Dispatcher;
-use SpringPHP\Core\SpringContext;
-use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestHttp;
 use SpringPHP\Inter\ServerInter;
 
@@ -27,22 +25,22 @@ class HttpServer extends Server implements ServerInter
         $this->serv = $http = new \Swoole\Http\Server($host, $port);
         $http->set(
             [
-                'worker_num' => SpringContext::config('settings.worker_num', 2),
+                'worker_num' => $this->getSettingsConfig('settings.worker_num', 1),
                 'daemonize' => false,
-                'enable_coroutine' => SpringContext::config('settings.enable_coroutine', true),
-                'max_request' => SpringContext::config('settings.max_request', 10000),
-                'dispatch_mode' => SpringContext::config('settings.dispatch_mode', 1),
-                'max_coroutine' => SpringContext::config('settings.max_coroutine', 100000),
-                'open_http_protocol' => SpringContext::config('settings.open_http_protocol', true),
-                'open_http2_protocol' => SpringContext::config('settings.open_http2_protocol', true),
-                'socket_buffer_size' => SpringContext::config('settings.socket_buffer_size', 15 * 1024 * 1024),
-                'buffer_output_size' => SpringContext::config('settings.buffer_output_size', 15 * 1024 * 1024),
-                'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
-                'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
-                'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
-                'task_enable_coroutine' => SpringContext::config('settings.task_enable_coroutine', false),
-                'enable_static_handler' => SpringContext::config('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
-                'document_root' => SpringContext::config('settings.document_root', '')  //静态资源根目录
+                'enable_coroutine' => $this->getSettingsConfig('settings.enable_coroutine', true),
+                'max_request' => $this->getSettingsConfig('settings.max_request', 10000),
+                'dispatch_mode' => $this->getSettingsConfig('settings.dispatch_mode', 1),
+                'max_coroutine' => $this->getSettingsConfig('settings.max_coroutine', 100000),
+                'open_http_protocol' => $this->getSettingsConfig('settings.open_http_protocol', true),
+                'open_http2_protocol' => $this->getSettingsConfig('settings.open_http2_protocol', true),
+                'socket_buffer_size' => $this->getSettingsConfig('settings.socket_buffer_size', 15 * 1024 * 1024),
+                'buffer_output_size' => $this->getSettingsConfig('settings.buffer_output_size', 15 * 1024 * 1024),
+                'package_max_length' => $this->getSettingsConfig('settings.package_max_length', 15 * 1024 * 1024),
+                'open_tcp_nodelay' => $this->getSettingsConfig('settings.open_tcp_nodelay', true),
+                'task_worker_num' => $this->getSettingsConfig('settings.task_worker_num', 0),
+                'task_enable_coroutine' => $this->getSettingsConfig('settings.task_enable_coroutine', false),
+                'enable_static_handler' => $this->getSettingsConfig('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
+                'document_root' => $this->getSettingsConfig('settings.document_root', '')  //静态资源根目录
             ]
         );
 

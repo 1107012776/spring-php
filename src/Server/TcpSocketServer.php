@@ -12,7 +12,6 @@ namespace SpringPHP\Server;
 use SpringPHP\Core\Dispatcher;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\ServerInter;
-use SpringPHP\Inter\TaskInter;
 use SpringPHP\Request\RequestSocket;
 use SpringPHP\Response\SocketResponse;
 
@@ -36,23 +35,31 @@ class TcpSocketServer extends Server implements ServerInter
 
         $server->set(
             [
-                'worker_num' => SpringContext::config('settings.worker_num', 2),
+                'worker_num' => $this->getSettingsConfig('settings.worker_num', 1),
                 'daemonize' => false,
-                'enable_coroutine' => SpringContext::config('settings.enable_coroutine', true),
-                'max_request' => SpringContext::config('settings.max_request', 10000),
-                'max_coroutine' => SpringContext::config('settings.max_coroutine', 100000),
-                'socket_buffer_size' => SpringContext::config('settings.socket_buffer_size', 15 * 1024 * 1024),
-                'buffer_output_size' => SpringContext::config('settings.buffer_output_size', 15 * 1024 * 1024),
-                'package_max_length' => SpringContext::config('settings.package_max_length', 15 * 1024 * 1024),
-                'open_tcp_nodelay' => SpringContext::config('settings.open_tcp_nodelay', true),
-                'task_worker_num' => SpringContext::config('settings.task_worker_num', 0),
-                'task_enable_coroutine' => SpringContext::config('settings.task_enable_coroutine', false),
+                'enable_coroutine' => $this->getSettingsConfig('settings.enable_coroutine', true),
+                'max_request' => $this->getSettingsConfig('settings.max_request', 10000),
+                'max_coroutine' => $this->getSettingsConfig('settings.max_coroutine', 100000),
+                'socket_buffer_size' => $this->getSettingsConfig('settings.socket_buffer_size', 15 * 1024 * 1024),
+                'buffer_output_size' => $this->getSettingsConfig('settings.buffer_output_size', 15 * 1024 * 1024),
+                'package_max_length' => $this->getSettingsConfig('settings.package_max_length', 15 * 1024 * 1024),
+                'open_tcp_nodelay' => $this->getSettingsConfig('settings.open_tcp_nodelay', true),
+                'task_worker_num' => $this->getSettingsConfig('settings.task_worker_num', 0),
+                'task_enable_coroutine' => $this->getSettingsConfig('settings.task_enable_coroutine', false),
+
             ]
         );
 
         //监听连接进入事件
         $server->on('Connect', function ($server, $fd) {
-            echo "Client: Connect.\n";
+            $this->fds[(int)$fd] = $fd;
+            if ($this->getSettingsConfig('settings.debug', false) == true) {
+                echo "Client: Connect." . (int)$fd . "\n";
+            }
+            $event = SpringContext::config('servers.' . $this->config['index'] . '.event_connect', null);
+            if (is_callable($event)) {
+                return $event($server, $fd);
+            }
         });
 
 
@@ -67,7 +74,7 @@ class TcpSocketServer extends Server implements ServerInter
                 return;
             }
             try {
-                $result = Dispatcher::init(new RequestSocket($data, $server, $this->swoole_process, $this->config), new SocketResponse());
+                $result = Dispatcher::init(new RequestSocket($data, $server, $this->swoole_process, $this->config, $fd), new SocketResponse());
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
             }
@@ -77,10 +84,15 @@ class TcpSocketServer extends Server implements ServerInter
 
         //监听连接关闭事件
         $server->on('Close', function ($server, $fd) {
-            echo "Client: Close.\n";
+            unset($this->fds[(int)$fd]);
+            if ($this->getSettingsConfig('settings.debug', false) == true) {
+                echo "Client: Close." . (int)$fd . "\n";
+            }
+            $event = SpringContext::config('servers.' . $this->config['index'] . '.event_close', null);
+            if (is_callable($event)) {
+                return $event($server, $fd);
+            }
         });
-
-
         $this->init($this->port, $config);
         $server->start();
     }

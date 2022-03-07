@@ -1,5 +1,7 @@
 <?php
 
+
+
 use SpringPHP\Server\Server;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Template\Render;
@@ -89,21 +91,91 @@ return [
             ]
         ],
         [
+            'module_name' => 'Manager',  //管理模块，类似服务注册中心
+            'type' => Server::SERVER_SOCKET,
+            'host' => '0.0.0.0',
+            'port' => 8498,
+            'crontab' => [
+                'open' => true,
+                'list' => [
+                    [
+                        'class' => \App\Timer\ManagerTimer::class,
+                        'ms' => 60000
+                    ],
+                ],
+                'after_time' => 10000
+            ]
+        ],
+        [
             'module_name' => 'WebSocket',
             'type' => Server::SERVER_WEBSOCKET,
             'host' => '0.0.0.0',
             'port' => 8397,
+            'event_worker_start' => function (\Swoole\Server $serv, $worker_id) {
+                \App\Event\WebSocketWorkerStartEvent::start();
+            },
+            'event_open' => function(\Swoole\Server $ws, \Swoole\Http\Request $request){
+                \App\Event\WebSocketOpenEvent::start($ws,$request);
+            },
+            'event_close' => function(\Swoole\Server $ws, $fd){
+                \App\Event\WebSocketCloseEvent::start($ws, $fd);
+            },
+            'settings' => [
+                'worker_num' => 1,
+                'task_worker_num' => 0,
+            ]
+        ],
+        [
+            'module_name' => 'WebSocket',
+            'type' => Server::SERVER_WEBSOCKET,
+            'host' => '0.0.0.0',
+            'open' => true,
+            'port' => 8398,
+            'event_worker_start' => function (\Swoole\Server $serv, $worker_id) {
+                \App\Event\WebSocketWorkerStartEvent::start();
+            },
+            'event_open' => function(\Swoole\Server $ws, \Swoole\Http\Request $request){
+                \App\Event\WebSocketOpenEvent::start($ws,$request);
+            },
+            'event_close' => function(\Swoole\Server $ws, $fd){
+                \App\Event\WebSocketCloseEvent::start($ws, $fd);
+            },
+            'settings' => [
+                'worker_num' => 1,
+                'task_worker_num' => 0,
+            ]
+        ],
+        [
+            'module_name' => 'WebSocket',
+            'type' => Server::SERVER_WEBSOCKET,
+            'host' => '0.0.0.0',
+            'port' => 8399,
+            'event_worker_start' => function (\Swoole\Server $serv, $worker_id) {
+                \App\Event\WebSocketWorkerStartEvent::start();
+            },
+            'event_open' => function(\Swoole\Server $ws, \Swoole\Http\Request $request){
+                \App\Event\WebSocketOpenEvent::start($ws,$request);
+            },
+            'event_close' => function(\Swoole\Server $ws, $fd){
+                \App\Event\WebSocketCloseEvent::start($ws, $fd);
+            },
+            'settings' => [
+                'worker_num' => 1,
+                'task_worker_num' => 0,
+            ]
         ],
         [
             'module_name' => 'WebSocket',
             'type' => Server::SERVER_SOCKET,
             'host' => '0.0.0.0',
             'port' => 8497,
-        ]
+        ],
+
+
     ],
     'settings' => [
         'enable_coroutine' => true,
-        'worker_num' => swoole_cpu_num(),
+        'worker_num' => 2,
         'runtime_path' => SPRINGPHP_ROOT . '/runtime',
         'pid_file' => SPRINGPHP_ROOT . '/runtime/spring-php.pid',
         'open_tcp_nodelay' => true,
@@ -118,6 +190,7 @@ return [
         // 因为 `Task` 主要处理无法协程化的方法，所以这里推荐设为 `false`，避免协程下出现数据混淆的情况
         'task_enable_coroutine' => false,
         'document_root' => SPRINGPHP_ROOT . '/static',
-        'enable_static_handler' => true
+        'enable_static_handler' => true,
+        'debug' => false
     ],
 ];

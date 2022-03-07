@@ -35,6 +35,19 @@ class RequestWebSocket implements RequestInter
         $this->data = json_decode($frame->data, true);
     }
 
+    public function getFd()
+    {
+        return $this->request->fd;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJsonrpc(): bool
+    {
+        return false;
+    }
+
     public function getUri()
     {
         return $this->data['uri'];

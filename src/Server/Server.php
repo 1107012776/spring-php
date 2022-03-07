@@ -9,6 +9,7 @@
 
 namespace SpringPHP\Server;
 
+use App\Rpc\WebSocketTestRpc;
 use SpringPHP\Crontab\Crontab;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Template\Render;
@@ -20,6 +21,7 @@ class Server
 {
     public $port;
     public $host;
+    public $fds = [];
     const SERVER_HTTP = 1;  //http
     const SERVER_WEBSOCKET = 2;  //webSocket
     const SERVER_SOCKET = 3;  //普通tcp socket
@@ -103,6 +105,7 @@ class Server
         $this->createTaskWorker();
         ManagerServer::getInstance()->setServerConfig($config);
         ManagerServer::getInstance()->setServer($this->serv);
+        ManagerServer::getInstance()->setMasterServer($this);
         Render::getInstance()->attachServer($this->serv, $port, $config);
         Crontab::getInstance()->attachServer($this->serv, $config);
     }
@@ -118,7 +121,13 @@ class Server
         if ($worker_id >= $serv->setting['worker_num']) {
             swoole_set_process_name("spring-php.task.{$worker_id} pid=" . getmypid());
         } else {
+            ManagerServer::getInstance()->setUniquelyIdentifies(uniqid(md5(getmypid())));
+            \Swoole\Runtime::enableCoroutine($flags = SWOOLE_HOOK_ALL);
             swoole_set_process_name("spring-php.worker.{$worker_id} listen:" . $this->host . ':' . $this->port);
+            $workerStartCallback = isset($this->config['event_worker_start']) ? $this->config['event_worker_start'] : '';
+            if (is_callable($workerStartCallback)) {
+                $workerStartCallback($serv, $worker_id);
+            }
         }
         if ($worker_id == 0) { //重启RenderWorker Crontab
             \Swoole\Coroutine::create(function () {
@@ -126,6 +135,22 @@ class Server
                 Crontab::getInstance()->restartWorker();
             });
         }
+    }
+
+    /**
+     * 获取某个全局配置(优先取server里面的)
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function getSettingsConfig($key, $default = '')
+    {
+        $notMsg = 'Server setting does not exist';
+        $value = \SpringPHP\Core\SpringContext::config('servers.' . $this->config['index'] . '.' . $key, $notMsg);
+        if ($notMsg === $value) {
+            return \SpringPHP\Core\SpringContext::config($key, $default);
+        }
+        return $value;
     }
 
     public static function start($config = [])

@@ -10,6 +10,7 @@
 namespace SpringPHP\Core;
 
 use SpringPHP\Component\Singleton;
+use SpringPHP\Server\Server;
 
 class ManagerServer
 {
@@ -22,6 +23,45 @@ class ManagerServer
      * @var \Swoole\Server $server
      */
     protected $server;
+
+    /**
+     * @var Server $masterServer
+     */
+    protected $masterServer;
+
+    protected $uniquelyIdentifies = '';  //进程唯一标识
+
+    /**
+     * @return string
+     */
+    public function getUniquelyIdentifies(): string
+    {
+        return $this->uniquelyIdentifies;
+    }
+
+    /**
+     * @param string $uniquelyIdentifies
+     */
+    public function setUniquelyIdentifies(string $uniquelyIdentifies): void
+    {
+        $this->uniquelyIdentifies = $uniquelyIdentifies;
+    }
+
+    /**
+     * @return Server
+     */
+    public function getMasterServer(): Server
+    {
+        return $this->masterServer;
+    }
+
+    /**
+     * @param Server $masterServer
+     */
+    public function setMasterServer(Server $masterServer): void
+    {
+        $this->masterServer = $masterServer;
+    }
 
 
     /**
@@ -36,6 +76,11 @@ class ManagerServer
     public function setServerConfig($serverConfig): void
     {
         $this->serverConfig = $serverConfig;
+    }
+
+    public function getServerConfigIndex(): int
+    {
+        return $this->serverConfig['index'];
     }
 
 

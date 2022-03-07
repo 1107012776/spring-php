@@ -8,6 +8,9 @@
  */
 
 namespace SpringPHP\Response;
+
+use SpringPHP\Request\RequestSocket;
+
 /**
  * Created by PhpStorm.
  * User: 11070
@@ -16,8 +19,20 @@ namespace SpringPHP\Response;
  */
 class SocketResponse
 {
+    use \SpringPHP\Rpc\JsonRpcResponseTrait;
     protected $http_code = 200;
     protected $reason;
+    protected $data;
+    /**
+     * @var RequestSocket
+     */
+    protected $request;
+
+    public function setRequest($request)
+    {
+        $this->request = $request;
+    }
+
 
     public function setStatusCode($http_code = 200, $reason = null)
     {
@@ -39,6 +54,18 @@ class SocketResponse
     public function getReason()
     {
         return $this->reason;
+    }
+
+
+    public function response($result)
+    {
+        if (is_array($result)) {
+            empty($result['code']) && $result['code'] = $this->getHttpCode();
+        }
+        if ($this->request->isJsonrpc()) {
+            return $this->responseJsonRpc($result);
+        }
+        return $result;
     }
 
 }

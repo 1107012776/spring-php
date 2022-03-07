@@ -2,9 +2,10 @@
 
 namespace App\Controller;
 
-use SpringPHP\Core\Controller;
 
-class Error extends Controller
+use SpringPHP\Core\HttpController;
+
+class Error extends HttpController
 {
     public function index404()
     {

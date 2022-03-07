@@ -16,6 +16,37 @@ class SpringContext
     public static $app;
     protected $config;
 
+    /**
+     * 获取上下文
+     * @param $key
+     * @param  $default
+     * @return mixed|string
+     */
+    public function get($key, $default = null)
+    {
+        $context = $this->context();
+        $value = isset($context[$key]) ? $context[$key] : $default;
+        return $value;
+    }
+
+
+    /**
+     * 设置上下文
+     * @param $key
+     * @param $value
+     * @return mixed|string
+     */
+    public function set($key, $value)
+    {
+        $context = $this->context();
+        return $context[$key] = $value;
+    }
+
+    /**
+     * 初始化上下文
+     * @param $config
+     * @return SpringContext
+     */
     public static function init($config)
     {
         if (empty(static::$app)) {
@@ -24,11 +55,18 @@ class SpringContext
         return static::$app;
     }
 
+    /**
+     * config全局配置合并
+     * @param $config
+     */
     public function merge($config)
     {
         $this->config = array_merge($this->config, $config);
     }
 
+    /**
+     * 全局配置重置
+     */
     public static function resetConfig()
     {
         $localConfigPath = SPRINGPHP_ROOT . "/App/Config/Config-Local.php";
@@ -58,6 +96,21 @@ class SpringContext
         $this->config = $config;
     }
 
+    /**
+     * 协程上下文
+     * @return mixed
+     */
+    protected function context()
+    {
+        return \Swoole\Coroutine::getContext();
+    }
+
+    /**
+     * 获取某个全局配置
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
     public function getConfig($key = '', $default = '')
     {
         if (strpos($key, '.') === false) {
@@ -82,6 +135,12 @@ class SpringContext
         return $default;
     }
 
+    /**
+     * 获取某个全局配置
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
     public static function config($key, $default = '')
     {
         return \SpringPHP\Core\SpringContext::$app->getConfig($key, $default);

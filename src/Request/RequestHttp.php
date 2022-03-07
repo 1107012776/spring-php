@@ -44,6 +44,15 @@ class RequestHttp implements RequestInter
         $this->config = $config;
     }
 
+    /**
+     * @return bool
+     */
+    public function isJsonrpc(): bool
+    {
+        return false;
+    }
+
+
     public function get($key, $default = '')
     {
         return !empty($this->request->get[$key]) ? $this->request->get[$key] : $default;

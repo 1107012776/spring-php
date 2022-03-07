@@ -90,6 +90,14 @@ class Dispatcher
         $config = $request->getConfig();
         $this->module_name = empty($config['module_name']) ? '' : $config['module_name'];
         $this->queryString = isset($arr[1]) ? $arr[1] : '';
+        if (!empty($this->queryString) && $this->request instanceof RequestSocket) {
+            parse_str($this->queryString, $getData);
+            $request = $this->request;
+            /**
+             * @var RequestSocket $request
+             */
+            is_array($getData) && $request->setMergeData($getData);
+        }
     }
 
 
@@ -132,7 +140,12 @@ class Dispatcher
             if (!empty($response) && get_class($response) == Response::class) {
                 $response->setStatusCode(403);
             } elseif (!empty($response) && $response instanceof SocketResponse) {
-                return json_encode(['code' => 403], JSON_UNESCAPED_UNICODE);
+                $socketResponse = $response;
+                /**
+                 * @var SocketResponse $socketResponse
+                 */
+                $result = $socketResponse->response(['code' => 403]);
+                return json_encode($result, JSON_UNESCAPED_UNICODE);
             }
             return '';
         }
@@ -147,11 +160,11 @@ class Dispatcher
             return var_export($result, true);
         }
         if (!empty($response) && $response instanceof SocketResponse) {
-            $webSocketResponse = $response;
+            $socketResponse = $response;
             /**
-             * @var SocketResponse $webSocketResponse
+             * @var SocketResponse $socketResponse
              */
-            empty($result['code']) && $result['code'] = $webSocketResponse->getHttpCode();
+            $result = $socketResponse->response($result);
         }
         if (!empty($response) && get_class($response) == Response::class) {
             $response->setHeader('Content-Type', 'application/json;charset=UTF-8');
@@ -167,13 +180,21 @@ class Dispatcher
      */
     protected function errorPage($response, $action)
     {
+        $responseSocketFunc = function ($socketResponse, $code = 0) {
+            /**
+             * @var SocketResponse $socketResponse
+             */
+            $socketResponse->setRequest($this->request);
+            $result = $socketResponse->response(['code' => $code]);
+            return json_encode($result, JSON_UNESCAPED_UNICODE);
+        };
         if (!empty($response) && get_class($response) == Response::class) {
             /**
              * @var Response $response
              */
             $response->setStatusCode(404);
         } elseif (!empty($response) && $response instanceof SocketResponse) {
-            return json_encode(['code' => 404], JSON_UNESCAPED_UNICODE);
+            return $responseSocketFunc($response, 404);
         }
         $errorPageArr = SpringContext::$app->getConfig('error_page');
         if (!empty($errorPageArr[0]) && class_exists($errorPageArr[0])) {
@@ -187,19 +208,19 @@ class Dispatcher
                 if (!empty($response) && get_class($response) == Response::class) {
                     $response->setStatusCode(403);
                 } elseif (!empty($response) && $response instanceof SocketResponse) {
-                    return json_encode(['code' => 403], JSON_UNESCAPED_UNICODE);
+                    return $responseSocketFunc($response, 403);
                 }
             }
             $action = isset($errorPageArr[1]) ? $errorPageArr[1] : '';
             if (empty($action) || !method_exists($obj, $action)) {
                 if (!empty($response) && $response instanceof SocketResponse) {
-                    return json_encode(['code' => 404], JSON_UNESCAPED_UNICODE);
+                    return $responseSocketFunc($response, 403);
                 }
                 return '404';
             }
         } else {
             if (!empty($response) && $response instanceof SocketResponse) {
-                return json_encode(['code' => 404], JSON_UNESCAPED_UNICODE);
+                return $responseSocketFunc($response, 404);
             }
             return '404';
         }

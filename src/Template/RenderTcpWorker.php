@@ -10,6 +10,8 @@
 namespace SpringPHP\Template;
 
 
+use Swoole\Coroutine;
+
 class RenderTcpWorker
 {
     /**

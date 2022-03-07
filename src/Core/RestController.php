@@ -9,7 +9,7 @@
 
 namespace SpringPHP\Core;
 
-class RestController extends Controller
+class RestController extends HttpController
 {
     public function beforeAction($action = '')
     {

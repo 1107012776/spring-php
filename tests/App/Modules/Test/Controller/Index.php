@@ -3,17 +3,31 @@
 namespace App\Test\Controller;
 
 
-use SpringPHP\Core\Controller;
+use SpringPHP\Core\HttpController;
 use SpringPHP\Template\Render;
 
 
-class Index extends Controller
+class Index extends HttpController
 {
     public function index()
     {
         return Render::getInstance()->render("Test/Index/index", [
-            'msg' => __CLASS__,
-            'module_name' => $this->request->getModuleName()
+            'port' => 8397,
+        ]);
+    }
+
+    public function index2()
+    {
+        return Render::getInstance()->render("Test/Index/index", [
+            'port' => 8398,
+        ]);
+    }
+
+
+    public function index3()
+    {
+        return Render::getInstance()->render("Test/Index/index", [
+            'port' => 8399,
         ]);
     }
 
