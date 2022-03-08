@@ -19,7 +19,11 @@ class Command
     {
         global $argv;
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
-        $pid = @file_get_contents($pid_file);
+        if(file_exists($pid_file)){
+            $pid = @file_get_contents($pid_file);
+        }else{
+            $pid = 0;
+        }
         if (isset($argv[1])) {
             switch ($argv[1]) {
                 case 'start':
