@@ -8,6 +8,7 @@ SpringPHP是一款基于Swoole的高性能框架
 php composer.phar create-project spring-php/demo [目录名称] [版本]
 #### 如下
 ```bash
+//demo 可自由删除不需要的代码
 php composer.phar create-project spring-php/demo demo dev-master
 ```
 
