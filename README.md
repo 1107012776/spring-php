@@ -5,19 +5,13 @@ SpringPHP是一款基于Swoole的高性能框架
 当前属于测试阶段，请勿用于生产环境
 
 # 安装
+php composer.phar create-project lys/spring-php-demo [目录名称] [版本]
+#### 如下
+```bash
+php composer.phar create-project lys/spring-php-demo demo dev-master
 ```
-composer require lys/spring-php=dev-main
 
-cp vendor/lys/spring-php/tests/spring-php ./spring-php    //复制启动脚本spring-php
-
-php spring-php installDemo  //安装demo案例，可自由删减不需要的部分
-
-composer require smarty/smarty   //demo案例依赖smarty模板来渲染视图
-
-composer require lys/php-sharding-pdo  //MySql数据库中间键
-
-```
-# 示例（tests目录）
+# 示例
 
 ### 启动
 ```bash
