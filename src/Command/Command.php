@@ -43,7 +43,6 @@ class Command
                     break;
                 case 'reload':
                     posix_kill($pid, SIGUSR1);
-//                    posix_kill($pid, SIGUSR2);
                     break;
                 case 'queryProcessNum':  //查询某服务进程数
                     echo static::queryProcessNum(isset($argv[2]) ? $argv[2] : '') . PHP_EOL;
