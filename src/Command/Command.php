@@ -86,7 +86,6 @@ class Command
         echo '    queryProcessNum ' . PHP_EOL;
         echo '    queryProcess ' . PHP_EOL;
         echo '    process ' . PHP_EOL;
-        echo '    installDemo ' . PHP_EOL;
     }
 
     /**
