@@ -10,7 +10,6 @@
 namespace SpringPHP\Command;
 
 use SpringPHP\Boot;
-use SpringPHP\Component\FileDirUtil;
 use SpringPHP\Core\SpringContext;
 
 class Command
@@ -19,9 +18,9 @@ class Command
     {
         global $argv;
         $pid_file = SpringContext::$app->getConfig('settings.pid_file');
-        if(file_exists($pid_file)){
+        if (file_exists($pid_file)) {
             $pid = @file_get_contents($pid_file);
-        }else{
+        } else {
             $pid = 0;
         }
         if (isset($argv[1])) {
@@ -61,22 +60,6 @@ class Command
                     break;
                 case 'process':  //查询某服务进程
                     $res = static::queryProcess('spring-php');
-                    if (is_array($res)) {
-                        foreach ($res as $row) {
-                            echo $row . PHP_EOL;
-                        }
-                    } else {
-                        echo var_export($res, true) . PHP_EOL;
-                    }
-                    break;
-                case 'installDemo':  // demo安装
-                    fwrite(STDOUT, "Please confirm to install the demo, which will overwrite the existing code? [yes/no]");
-                    $check = trim(fgets(STDIN));
-                    if ($check != 'yes') {
-                        echo 'Installation cancelled' . PHP_EOL;
-                        break;
-                    }
-                    $res = static::installDemo();
                     if (is_array($res)) {
                         foreach ($res as $row) {
                             echo $row . PHP_EOL;
@@ -152,42 +135,6 @@ class Command
     {
         exec("ps -auxf | grep " . $service, $res);
         return $res;
-    }
-
-    public static function installDemo()
-    {
-        $demoVendorBasePath = '';
-        foreach ([SPRINGPHP_ROOT . '/vendor/lys/spring-php/tests', SPRINGPHP_ROOT . '/../vendor/lys/spring-php/tests'] as $file) {
-            if (file_exists($file)) {
-                $demoVendorBasePath = $file;
-                break;
-            }
-        }
-        if (empty($demoVendorBasePath)) {
-            return ['fail'];
-        }
-        $needDirs = ['App', 'static'];
-        $needFiles = ['bootstrap.php', 'test.sh'];
-        $util = new FileDirUtil();
-        foreach ($needDirs as $val) {
-            if (file_exists(SPRINGPHP_ROOT . '/' . $val)) {
-                if ($util->unlinkDir(SPRINGPHP_ROOT . '/' . $val)) {
-                    $util->copyDir($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
-                }
-            } else {
-                $util->copyDir($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
-            }
-        }
-        foreach ($needFiles as $val) {
-            if (file_exists(SPRINGPHP_ROOT . '/' . $val)) {
-                if ($util->unlinkFile(SPRINGPHP_ROOT . '/' . $val)) {
-                    $util->copyFile($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
-                }
-            } else {
-                $util->copyFile($demoVendorBasePath . '/' . $val, SPRINGPHP_ROOT . '/' . $val);
-            }
-        }
-        return ['success'];
     }
 
 

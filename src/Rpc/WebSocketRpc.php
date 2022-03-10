@@ -10,7 +10,6 @@
 namespace SpringPHP\Rpc;
 
 
-
 use SpringPHP\WebSocket\WebSocketClient;
 
 /**
@@ -39,7 +38,7 @@ abstract class WebSocketRpc
         try {
             $this->client = new WebSocketClient($this->ws . '://' . $this->ip . ':' . $this->port, $connectTimeout, $rwTimeout);
             $this->client->ping();
-        }catch(\SpringPHP\WebSocket\ServerConnectException $e) {
+        } catch (\SpringPHP\WebSocket\ServerConnectException $e) {
             return false;
         } catch (\Exception $e) {
             return false;
@@ -49,7 +48,7 @@ abstract class WebSocketRpc
     public function ping()
     {
         try {
-            if(empty($this->client)){
+            if (empty($this->client)) {
                 return false;
             }
             return $this->client->ping();
@@ -62,7 +61,7 @@ abstract class WebSocketRpc
     public function close()
     {
         try {
-            if(empty($this->client)){
+            if (empty($this->client)) {
                 return false;
             }
             $this->client->close();
@@ -75,7 +74,7 @@ abstract class WebSocketRpc
     public function recv()
     {
         try {
-            if(empty($this->client)){
+            if (empty($this->client)) {
                 return false;
             }
             $frame = $this->client->recv();
@@ -90,7 +89,7 @@ abstract class WebSocketRpc
     public function __call($name, $arguments)
     {
         try {
-            if(!$this->ping()){
+            if (!$this->ping()) {
                 return false;
             }
             $this->client->send(json_encode([
@@ -99,9 +98,9 @@ abstract class WebSocketRpc
             ], JSON_UNESCAPED_UNICODE));
             $frame = $this->client->recv();
             $playload = $frame->playload;
-            if(isset($arguments[1]) && $arguments[1] == true){
+            if (isset($arguments[1]) && $arguments[1] == true) {
                 $res = json_decode($playload, true);
-                return is_array($res) ? $res:$playload;
+                return is_array($res) ? $res : $playload;
             }
             return $playload;
         } catch (\Exception $e) {

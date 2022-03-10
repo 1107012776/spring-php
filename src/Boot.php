@@ -75,7 +75,7 @@ LOGO;
 
     protected static function swooleCreateOneWorker($serverConfig)
     {
-        if(isset($serverConfig['open']) && $serverConfig['open'] === false){
+        if (isset($serverConfig['open']) && $serverConfig['open'] === false) {
             return;
         }
         $process = new \Swoole\Process(function (\Swoole\Process $process) use ($serverConfig) {
