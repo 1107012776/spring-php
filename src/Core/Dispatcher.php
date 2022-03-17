@@ -16,6 +16,7 @@ use SpringPHP\Request\RequestWebSocket;
 use SpringPHP\Request\RequestSocket;
 use SpringPHP\Response\SocketResponse;
 use SpringPHP\Route\Router;
+use SpringPHP\Session\Session;
 use Swoole\Http\Response;
 
 class Dispatcher
@@ -150,6 +151,7 @@ class Dispatcher
             return '';
         }
         $result = $obj->$action();
+        $this->responseSession($response);
         if (is_string($result)) {
             return $result;
         }
@@ -225,5 +227,38 @@ class Dispatcher
             return '404';
         }
         return '404';
+    }
+
+    protected function responseSession($response)
+    {
+        if (Session::getInstance()->isOpen()
+            && get_class($response) == Response::class
+            && $this->request instanceof RequestHttp
+        ) {
+            $sessionId = Session::getInstance()->getSessionId();
+            $sessionName = ManagerServer::getInstance()->getServerConfig('session.name', 'SpringPHPSession');
+            $httpOnly = ManagerServer::getInstance()->getServerConfig('session.httpOnly', false);
+            $session_path = ManagerServer::getInstance()->getServerConfig('session.path', '/');
+            $domain = Session::getInstance()->getDomain();
+            $path = Session::getInstance()->getPath();
+            !empty($path) && $session_path = $path;
+            if (empty($domain)) {
+                $host = $this->request->getHost();
+                $host = preg_replace([
+                    '/:80$/', '/:443$/'
+                ], '', $host);
+            } else {
+                $host = $domain;
+            }
+            $maxAgeStr = '';
+            $maxAge = Session::getInstance()->getMaxAge();
+            !is_string($maxAge) && $maxAgeStr = ';Max-Age=' . $maxAge;
+            if ($httpOnly) {
+                $response->setHeader('Set-Cookie', $sessionName . '=' . $sessionId . ';domain=' . $host . $maxAgeStr . ';path=' . $session_path . ';HttpOnly');
+            } else {
+                $response->setHeader('Set-Cookie', $sessionName . '=' . $sessionId . ';domain=' . $host . $maxAgeStr . ';path=' . $session_path);
+            }
+            Session::getInstance()->end();
+        }
     }
 }

@@ -115,6 +115,11 @@ class RequestHttp implements RequestInter
         return $this->request->header;
     }
 
+    public function getHost()
+    {
+        return isset($this->request->header['host']) ? $this->request->header['host'] : '';
+    }
+
     public function server()
     {
         return $this->request->server;
@@ -147,4 +152,13 @@ class RequestHttp implements RequestInter
     {
         return $this->request->server['request_method'];
     }
+
+    public function cookie($key = '', $default = '')
+    {
+        if (!empty($key)) {
+            return isset($this->request->cookie[$key]) ? $this->request->cookie[$key] : $default;
+        }
+        return $this->request->cookie;
+    }
+
 }

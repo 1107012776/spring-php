@@ -9,8 +9,25 @@
 
 namespace SpringPHP\Core;
 
+use SpringPHP\Inter\RequestInter;
+use SpringPHP\Request\RequestHttp;
+use SpringPHP\Session\FileSession;
+use SpringPHP\Session\Session;
+
 abstract class HttpController extends Controller
 {
+    public function init(RequestInter $request, $response)
+    {
+        parent::init($request, $response);
+        if ($request instanceof RequestHttp) {
+            $open = ManagerServer::getInstance()->getServerConfig('session.open', false);
+            if ($open) {
+                $sessionName = ManagerServer::getInstance()->getServerConfig('session.name', 'SpringPHPSession');
+                Session::getInstance()->start(new FileSession($request->cookie($sessionName)));
+            }
+        }
+    }
+
     protected function setHeader($key, $value, $ucwords = null)
     {
         if (empty($this->response)) {

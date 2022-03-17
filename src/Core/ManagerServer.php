@@ -65,10 +65,15 @@ class ManagerServer
 
 
     /**
-     * @return array
+     * @param  $key
+     * @param  $default
+     * @return array|string
      */
-    public function getServerConfig()
+    public function getServerConfig($key = '', $default = '')
     {
+        if (!empty($key)) {
+            return SpringContext::$app->getConfig('servers.' . $this->getServerConfigIndex() . '.' . $key, $default);
+        }
         return $this->serverConfig;
     }
 
