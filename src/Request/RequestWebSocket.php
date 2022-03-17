@@ -76,12 +76,12 @@ class RequestWebSocket implements RequestInter
 
     public function getConfig()
     {
-        return $this->config;
+        return ManagerServer::getInstance()->getServerConfig();
     }
 
     public function getModuleName()
     {
-        return empty($this->config['module_name']) ? '' : $this->config['module_name'];
+        return ManagerServer::getInstance()->getServerConfig('module_name', '');
     }
 
     public function get($key, $default = '')
