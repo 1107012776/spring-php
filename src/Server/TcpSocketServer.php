@@ -74,11 +74,13 @@ class TcpSocketServer extends Server implements ServerInter
                 return;
             }
             try {
-                $result = Dispatcher::init(new RequestSocket($data, $server, $this->swoole_process, $this->config, $fd), new SocketResponse());
+                $result = Dispatcher::init(new RequestSocket($data, $this->swoole_process, $fd), new SocketResponse());
+                $server->send($fd, $result);
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
+                $server->send($fd, '');
             }
-            $server->send($fd, $result);
+
         });
 
 

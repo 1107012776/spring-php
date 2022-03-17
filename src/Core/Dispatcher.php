@@ -155,6 +155,9 @@ class Dispatcher
         if (is_string($result)) {
             return $result;
         }
+        if (is_null($result)) {
+            return '';
+        }
         if (!is_array($result)) {
             if (is_object($result)) {
                 return (array)$result;
@@ -235,6 +238,9 @@ class Dispatcher
             && get_class($response) == Response::class
             && $this->request instanceof RequestHttp
         ) {
+            /**
+             * @var Response $response
+             */
             $sessionId = Session::getInstance()->getSessionId();
             $sessionName = ManagerServer::getInstance()->getServerConfig('session.name', 'SpringPHPSession');
             $httpOnly = ManagerServer::getInstance()->getServerConfig('session.httpOnly', false);

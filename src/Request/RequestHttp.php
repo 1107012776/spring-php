@@ -9,6 +9,7 @@
 
 namespace SpringPHP\Request;
 
+use SpringPHP\Core\ManagerServer;
 use SpringPHP\Inter\RequestInter;
 
 class RequestHttp implements RequestInter
@@ -18,30 +19,23 @@ class RequestHttp implements RequestInter
      * @var \Swoole\Http\Request
      */
     protected $request;
-    /**
-     * @var \Swoole\Server $serv
-     */
-    protected $serv = null;
+
     /**
      * @var \Swoole\Process $process
      */
     protected $process = null;
 
-    protected $config = [];
 
     protected $params = [];
 
     public function __construct(
         \Swoole\Http\Request $request,
-        \Swoole\Server $serv = null,
-        \Swoole\Process $process = null,
-        $config
+        \Swoole\Process $process = null
     )
     {
         $this->request = $request;
-        $this->serv = $serv;
         $this->process = $process;
-        $this->config = $config;
+
     }
 
     /**
@@ -130,7 +124,7 @@ class RequestHttp implements RequestInter
      */
     public function managerServer()
     {
-        return $this->serv;
+        return ManagerServer::getInstance()->getServer();
     }
 
     public function getProcess()
@@ -140,12 +134,12 @@ class RequestHttp implements RequestInter
 
     public function getConfig()
     {
-        return $this->config;
+        return ManagerServer::getInstance()->getServerConfig();
     }
 
     public function getModuleName()
     {
-        return empty($this->config['module_name']) ? '' : $this->config['module_name'];
+        return ManagerServer::getInstance()->getServerConfig('module_name', '');
     }
 
     public function method()

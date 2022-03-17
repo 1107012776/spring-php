@@ -9,29 +9,26 @@
 
 namespace SpringPHP\Request;
 
+use SpringPHP\Core\ManagerServer;
 use SpringPHP\Inter\RequestInter;
 
 class RequestWebSocket implements RequestInter
 {
     protected $request;
-    protected $serv;
     protected $process;
-    protected $config = [];
 
     protected $params = [];
     protected $data = [];
 
     public function __construct(
         $frame,
-        \Swoole\Server $serv = null,
-        \Swoole\Process $process = null,
-        $config
+        \Swoole\Process $process = null
     )
     {
         $this->request = $frame;
-        $this->serv = $serv;
+
         $this->process = $process;
-        $this->config = $config;
+
         $this->data = json_decode($frame->data, true);
     }
 
@@ -53,9 +50,12 @@ class RequestWebSocket implements RequestInter
         return $this->data['uri'];
     }
 
+    /**
+     * @return \Swoole\Server
+     */
     public function managerServer()
     {
-        return $this->serv;
+        return ManagerServer::getInstance()->getServer();
     }
 
     public function header()

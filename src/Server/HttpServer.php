@@ -46,11 +46,13 @@ class HttpServer extends Server implements ServerInter
 
         $http->on('request', function (\Swoole\Http\Request $request, $response) use ($http, $config) {
             try {
-                $result = Dispatcher::init(new RequestHttp($request, $http, $this->swoole_process, $config), $response);
+                $result = Dispatcher::init(new RequestHttp($request, $this->swoole_process), $response);
+                $response->end($result);
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
+                $response->end('');
             }
-            $response->end($result);
+
         });
 
         $this->init($this->port, $config);

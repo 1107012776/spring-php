@@ -68,7 +68,8 @@ abstract class HttpController extends Controller
          */
         $response = $this->response;
         if (get_class($response) == \Swoole\Http\Response::class) {
-            $response->redirect($location, $http_code);
+            !empty($http_code) ? $this->responseCode($http_code) : $this->responseCode(302);
+            $response->setHeader('Location', $location);
         }
         return true;
     }

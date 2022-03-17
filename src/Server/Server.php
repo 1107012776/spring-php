@@ -9,7 +9,6 @@
 
 namespace SpringPHP\Server;
 
-use App\Rpc\WebSocketTestRpc;
 use SpringPHP\Crontab\Crontab;
 use SpringPHP\Inter\TaskInter;
 use SpringPHP\Template\Render;

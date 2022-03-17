@@ -9,6 +9,7 @@
 
 namespace SpringPHP\Request;
 
+use SpringPHP\Core\ManagerServer;
 use SpringPHP\Inter\RequestInter;
 
 /**
@@ -21,10 +22,7 @@ use SpringPHP\Inter\RequestInter;
  */
 class RequestSocket implements RequestInter
 {
-    protected $serv;
     protected $process;
-    protected $config = [];
-
     protected $params = [];
     protected $data = [];
     protected $isJsonrpc = false;
@@ -33,15 +31,11 @@ class RequestSocket implements RequestInter
 
     public function __construct(
         $data,
-        \Swoole\Server $serv = null,
         \Swoole\Process $process = null,
-        $config,
         $fd
     )
     {
-        $this->serv = $serv;
         $this->process = $process;
-        $this->config = $config;
         $arr = json_decode($data, true);
         $this->data = is_array($arr) ? $arr : $data;
         $this->fd = $fd;
@@ -91,9 +85,12 @@ class RequestSocket implements RequestInter
     }
 
 
+    /**
+     * @return \Swoole\Server
+     */
     public function managerServer()
     {
-        return $this->serv;
+        return ManagerServer::getInstance()->getServer();
     }
 
     public function header()
@@ -112,15 +109,6 @@ class RequestSocket implements RequestInter
         return $this->process;
     }
 
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    public function getModuleName()
-    {
-        return empty($this->config['module_name']) ? '' : $this->config['module_name'];
-    }
 
     public function get($key, $default = '')
     {
@@ -178,5 +166,16 @@ class RequestSocket implements RequestInter
     {
         return isset($this->data['method']) ? $this->data['method'] : 'GET';
     }
+
+    public function getConfig()
+    {
+        return ManagerServer::getInstance()->getServerConfig();
+    }
+
+    public function getModuleName()
+    {
+        return ManagerServer::getInstance()->getServerConfig('module_name', '');
+    }
+
 
 }

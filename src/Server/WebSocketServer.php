@@ -68,11 +68,12 @@ class WebSocketServer extends Server implements ServerInter
 //监听WebSocket消息事件
         $ws->on('Message', function (\Swoole\Server $ws, \Swoole\Websocket\Frame $frame) {
             try {
-                $result = Dispatcher::init(new RequestWebSocket($frame, $ws, $this->swoole_process, $this->config), new SocketResponse());
+                $result = Dispatcher::init(new RequestWebSocket($frame, $this->swoole_process), new SocketResponse());
+                $ws->push($frame->fd, $result);
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
+                $ws->push($frame->fd, '');
             }
-            $ws->push($frame->fd, $result);
         });
 
 //监听WebSocket连接关闭事件
