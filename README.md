@@ -1,22 +1,22 @@
 # SpringPHP - 高性能 Swoole 框架
 SpringPHP是一款基于Swoole的高性能框架
 
-# 说明
+# Illustrate
 目前处于测试阶段，请在生产环境中谨慎使用
 
 It is currently in the testing stage, please use it in the production environment with caution
 
-# 安装
+# Install
 php composer.phar create-project spring-php/demo [目录名称] [版本]
-#### 如下
+#### As follows:
 ```bash
 //demo 可自由删除不需要的代码
 php composer.phar create-project spring-php/demo demo dev-master
 ```
 
-# 示例
+# Example
 
-### 启动
+### Start up
 ```bash
 php spring-php start   //守护模式需要在start后面加 -d
 ```
@@ -30,17 +30,17 @@ php spring-php start   //守护模式需要在start后面加 -d
 
 ```
 
-### 关闭
+### Shut down
 ```bash
 php spring-php stop
 ```
 
-### 重启worker
+### Restart worker
 ```bash
 php spring-php reload
 ```
 
-### 查看进程
+### View program progress
 ```bash
 php spring-php process
 ```
