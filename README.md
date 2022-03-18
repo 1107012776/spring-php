@@ -11,9 +11,9 @@ It is currently in the testing stage, please use it in the production environmen
 
 # Environment
 
-PHP >= 7.2
+- PHP >= 7.2
 
-Swoole >= 4.1.0
+- Swoole >= 4.1.0
 
 # Installation
 
