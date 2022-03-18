@@ -4,15 +4,16 @@ SpringPHP是一款基于Swoole的高性能框架
 SpringPHP is a high-performance framework based on Swoole.
 
 # Introduction
+
+PHP >= 7.2
+
+Swoole >= 4.0
+
 目前处于测试阶段，请在生产环境中谨慎使用
 
 It is currently in the testing stage, please use it in the production environment with caution.
 
 # Installation
-
-PHP >= 7.2
-
-Swoole >= 4.0
 
 php composer.phar create-project spring-php/demo [目录名称] [版本]
 #### As follows:
