@@ -9,6 +9,11 @@ SpringPHP is a high-performance framework based on Swoole.
 It is currently in the testing stage, please use it in the production environment with caution.
 
 # Installation
+
+PHP >= 7.2
+
+Swoole >= 4.0
+
 php composer.phar create-project spring-php/demo [目录名称] [版本]
 #### As follows:
 ```bash
