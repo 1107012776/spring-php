@@ -50,7 +50,7 @@ php spring-php stop
 php spring-php reload
 ```
 
-### View program progress
+### View program process
 ```bash
 php spring-php process
 ```
