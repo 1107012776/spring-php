@@ -133,6 +133,13 @@ class Dispatcher
         if (empty($obj) || !method_exists($obj, $action)) {   //找不到具体的页面
             return $this->errorPage($response, $action);
         }
+        $reflection = new \ReflectionMethod($controllerClass, $action);
+        if (!$reflection->isPublic()
+            || $reflection->isConstructor()
+            || $reflection->isDestructor()
+        ) {  //利用反射进行校验
+            return $this->errorPage($response, $action);
+        }
         /**
          * @var Controller $obj
          */
