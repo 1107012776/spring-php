@@ -23,6 +23,11 @@ abstract class Controller
      */
     protected $response;
 
+    /**
+     * 访问的控制器action名称
+     * @var string
+     */
+    protected $action = '';
 
     public function init(RequestInter $request, $response)
     {
@@ -35,6 +40,7 @@ abstract class Controller
 
     public function beforeAction($action = '')
     {
+        $this->action = $action;
         return true;
     }
 
