@@ -9,7 +9,7 @@ SpringPHP is a high-performance framework based on Swoole.
 - [x] `Session`组件 
 - [x] `RPC、WebSocket RPC`
 - [x] 定时任务
-- [x] 支持的Server有`Socket`服务、`WebSocket`服务、`HTTP`服务
+- [x] 支持的Server服务有`Socket`、`WebSocket`、`HTTP`
 - [ ] 案例实战 
 - [ ] 文档完善
 
