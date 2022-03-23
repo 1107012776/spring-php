@@ -6,10 +6,11 @@ SpringPHP is a high-performance framework based on Swoole.
 # TODO
 - [x] `MVC`
 - [x] 自定义路由
-- [x] `Session`组件 
+- [x] `Session`组件 FileSession Driver
 - [x] `RPC、WebSocket RPC`
 - [x] 定时任务
 - [x] 支持的Server有`Socket`、`WebSocket`、`HTTP`
+- [ ] `Session`组件 RedisSession Driver
 - [ ] 案例实战 
 - [ ] 文档完善
 
