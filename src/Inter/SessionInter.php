@@ -36,4 +36,6 @@ interface SessionInter
     public function setPath($path);
 
     public function getPath();
+
+    public function gc($timeout);
 }

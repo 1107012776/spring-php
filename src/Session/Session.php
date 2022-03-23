@@ -3,11 +3,14 @@
 namespace SpringPHP\Session;
 
 use SpringPHP\Component\Singleton;
+use SpringPHP\Core\ManagerServer;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\SessionInter;
 
 class Session
 {
+    protected $isGc = true;
+    protected $gcTime = 0;
     use Singleton;
 
     /**
@@ -17,7 +20,6 @@ class Session
     {
         return SpringContext::$app->get(Session::class . '_driver');
     }
-
 
     public function setSessionId($id)
     {
@@ -98,6 +100,22 @@ class Session
 
     public function end()
     {
+        $isGcStart = ManagerServer::getInstance()->getServerConfig('session.gc_start', false);
+        $isGcStart && $this->gc(ManagerServer::getInstance()->getServerConfig('session.timeout', 3600));
         return $this->getDriver()->end();
+    }
+
+    public function gc($timeout = 3600)
+    {
+        $currentTime = time();
+        if ($this->isGc && $currentTime > $this->gcTime) {  //减少gc的调用次数
+            $this->gcTime = time() + $timeout; //每个超时时间段gc一次
+            $this->isGc = false;
+            $driver = $this->getDriver();
+            \Swoole\Coroutine::create(function () use ($timeout, $driver) {
+                $driver->gc($timeout);
+                $this->isGc = true;
+            });
+        }
     }
 }

@@ -2,8 +2,10 @@
 
 namespace SpringPHP\Session;
 
+use SpringPHP\Component\FileDirUtil;
 use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\SessionInter;
+
 
 class FileSession implements SessionInter
 {
@@ -90,8 +92,13 @@ class FileSession implements SessionInter
         if (!is_array($this->data)) {
             return false;
         }
-        $str = json_encode($this->data, JSON_UNESCAPED_UNICODE);
         $dir = $runtime_path . '/Session/';
+        if (empty($this->data)
+            && !file_exists($dir . $this->id)
+        ) {  //数据为空文件又不存在，无需创建session文件
+            return false;
+        }
+        $str = json_encode($this->data, JSON_UNESCAPED_UNICODE);
         return file_put_contents($dir . $this->id, $str, LOCK_EX);
     }
 
@@ -140,6 +147,19 @@ class FileSession implements SessionInter
     public function getPath()
     {
         return $this->path;
+    }
+
+    public function gc($timeout = 3600)
+    {
+        $runtime_path = SpringContext::config('settings.runtime_path');
+        $dir = $runtime_path . '/Session/';
+        $fileUtil = new FileDirUtil();
+        $list = $fileUtil->dirList($dir);
+        foreach ($list as $item) {
+            if (filectime($item) <= time() - $timeout) {
+                @unlink($dir . '/' . $item);
+            }
+        }
     }
 
 

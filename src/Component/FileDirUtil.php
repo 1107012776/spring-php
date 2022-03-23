@@ -331,7 +331,7 @@ class FileDirUtil
         foreach ($files as $v) {
             $fileext = $this->fileext($v);
             if (!$exts || preg_match("/\.($exts)/i", $v)) {
-                $list [] = $v;
+                $list[] = $v;
                 if (is_dir($v)) {
                     $list = $this->dirList($v, $exts, $list);
                 }
