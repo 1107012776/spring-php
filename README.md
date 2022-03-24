@@ -1,11 +1,23 @@
 # SpringPHP - 高性能 Swoole 框架
-SpringPHP是一款基于Swoole的高性能框架
 
 SpringPHP is a high-performance framework based on Swoole.
 
-# Introduction
+# About Project
 
-目前处于测试阶段，请谨慎在生产环境中使用
+SpringPHP is my first framework and also the precipitation of my own technology.
+
+# TODO
+- [x] MVC
+- [x] Custom routing
+- [x] Support file session
+- [x] RPC、WebSocket RPC
+- [x] Timed task
+- [x] Support Socket, WebSocket, HTTP
+- [ ] Case practice
+- [ ] Improve documentation
+
+
+# Introduction
 
 It is currently in the testing stage, please use it in the production environment with caution.
 
@@ -17,10 +29,10 @@ It is currently in the testing stage, please use it in the production environmen
 
 # Installation
 
-php composer.phar create-project spring-php/demo [目录名称] [版本]
+php composer.phar create-project spring-php/demo [Directory name] [Version]
 #### As follows:
 ```bash
-//demo 可自由删除不需要的代码
+//You can freely delete unwanted code
 php composer.phar create-project spring-php/demo demo dev-master
 ```
 
@@ -28,7 +40,7 @@ php composer.phar create-project spring-php/demo demo dev-master
 
 ### Start up
 ```bash
-php spring-php start   //守护模式需要在start后面加 -d
+php spring-php start   //Guardian mode needs to add -d after start
 ```
 ```
 
