@@ -13,6 +13,7 @@ SpringPHP is my first framework and also the precipitation of my own technology.
 - [x] RPC、WebSocket RPC
 - [x] Timed task
 - [x] Support Socket, WebSocket, HTTP
+- [x] Support for multiple modules
 - [ ] Case practice
 - [ ] Improve documentation
 
