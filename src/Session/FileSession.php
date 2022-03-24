@@ -157,7 +157,7 @@ class FileSession implements SessionInter
         $list = $fileUtil->dirList($dir);
         foreach ($list as $item) {
             if (filectime($item) <= time() - $timeout) {
-                @unlink($dir . '/' . $item);
+                @unlink($item);
             }
         }
     }

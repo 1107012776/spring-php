@@ -107,6 +107,9 @@ class Session
 
     public function gc($timeout = 3600)
     {
+        if (!$this->isOpen()) {
+            return;
+        }
         $currentTime = time();
         if ($this->isGc && $currentTime > $this->gcTime) {  //减少gc的调用次数
             $this->gcTime = time() + $timeout; //每个超时时间段gc一次
