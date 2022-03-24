@@ -1,11 +1,10 @@
 # SpringPHP - 高性能 Swoole 框架
 
+SpringPHP is a high-performance framework based on Swoole.
+
 # About Project
 
 SpringPHP is my first framework and also the precipitation of my own technology.
-
-SpringPHP is a high-performance framework based on Swoole.
-
 
 # TODO
 - [x] MVC
