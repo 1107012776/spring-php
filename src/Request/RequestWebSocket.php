@@ -82,8 +82,8 @@ class RequestWebSocket implements RequestInter
 
     public function getModuleName()
     {
-        if(!empty(SpringContext::$app->get(RequestInter::class.'_module_name'))){
-            return SpringContext::$app->get(RequestInter::class.'_module_name');
+        if (!empty(SpringContext::$app->get(RequestInter::class . '_module_name'))) {
+            return SpringContext::$app->get(RequestInter::class . '_module_name');
         }
         return '';
     }
