@@ -116,8 +116,20 @@ class Dispatcher
             return $routingCallBack($this->request, $response);
         }
         $arr = explode('/', $this->routing);
-        $controller = $this->controller = !empty($arr[1]) ? $arr[1] : 'Index';
-        $action = $this->action = !empty($arr[2]) ? $arr[2] : 'index';
+        if (count($arr) == 4) {  //存在说明有模块名前缀
+            $controller = $this->controller = !empty($arr[2]) ? $arr[2] : 'Index';
+            $action = $this->action = !empty($arr[3]) ? $arr[3] : 'index';
+            if (in_array($arr[1], $this->module_name)) {
+                $this->module_name = $arr[1];
+                SpringContext::$app->set(RequestInter::class . '_module_name', $this->module_name);
+            } else {
+                return $this->errorPage($response, $action);
+            }
+        } else {
+            SpringContext::$app->set(RequestInter::class . '_module_name', $this->module_name = is_array($this->module_name) ? $this->module_name[0] : $this->module_name);
+            $controller = $this->controller = !empty($arr[1]) ? $arr[1] : 'Index';
+            $action = $this->action = !empty($arr[2]) ? $arr[2] : 'index';
+        }
         $fix = '\App\Controller\\';
         if (!empty($this->module_name)) {
             SimpleAutoload::add([

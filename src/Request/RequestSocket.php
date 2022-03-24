@@ -10,6 +10,7 @@
 namespace SpringPHP\Request;
 
 use SpringPHP\Core\ManagerServer;
+use SpringPHP\Core\SpringContext;
 use SpringPHP\Inter\RequestInter;
 
 /**
@@ -174,7 +175,10 @@ class RequestSocket implements RequestInter
 
     public function getModuleName()
     {
-        return ManagerServer::getInstance()->getServerConfig('module_name', '');
+        if(!empty(SpringContext::$app->get(RequestInter::class.'_module_name'))){
+            return SpringContext::$app->get(RequestInter::class.'_module_name');
+        }
+        return '';
     }
 
 
