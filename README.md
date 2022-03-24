@@ -29,7 +29,7 @@ It is currently in the testing stage, please use it in the production environmen
 
 # Installation
 
-php composer.phar create-project spring-php/demo [目录名称] [版本]
+php composer.phar create-project spring-php/demo [Directory name] [Version]
 #### As follows:
 ```bash
 //You can freely delete unwanted code
@@ -40,7 +40,7 @@ php composer.phar create-project spring-php/demo demo dev-master
 
 ### Start up
 ```bash
-php spring-php start   //守护模式需要在start后面加 -d
+php spring-php start   //Guardian mode needs to add -d after start
 ```
 ```
 
