@@ -8,18 +8,16 @@ SpringPHP is my first framework and also the precipitation of my own technology.
 
 # TODO
 - [x] MVC
-- [x] 自定义路由
-- [x] Session组件 FileSession Driver
+- [x] Custom routing
+- [x] Support file session
 - [x] RPC、WebSocket RPC
-- [x] 定时任务
-- [x] 支持的Server有Socket、WebSocket、HTTP
-- [ ] 案例实战 
-- [ ] 文档完善
+- [x] Timed task
+- [x] Support Socket, WebSocket, HTTP
+- [ ] Case practice
+- [ ] Improve documentation
 
 
 # Introduction
-
-目前处于测试阶段，请谨慎在生产环境中使用
 
 It is currently in the testing stage, please use it in the production environment with caution.
 
@@ -34,7 +32,7 @@ It is currently in the testing stage, please use it in the production environmen
 php composer.phar create-project spring-php/demo [目录名称] [版本]
 #### As follows:
 ```bash
-//demo 可自由删除不需要的代码
+//You can freely delete unwanted code
 php composer.phar create-project spring-php/demo demo dev-master
 ```
 
