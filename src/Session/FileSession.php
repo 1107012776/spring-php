@@ -101,12 +101,14 @@ class FileSession implements SessionInter
             return false;
         }
         $str = json_encode($this->data, JSON_UNESCAPED_UNICODE);
-        $newHash = sha1($str) . '_' . md5($str);
-        $filectime = @filectime($dir . $this->id);
-        if ($filectime !== false
-            && !empty($this->oldHash) && $this->oldHash == $newHash
-            && $filectime <= time() - 60) { //数据未变更，减少io操作
-            return false;
+        $lastChangeTime = @filectime($dir . $this->id);
+        if ($lastChangeTime !== false) {
+            $newHash = sha1($str) . '_' . md5($str);
+            if (!empty($this->oldHash)
+                && $this->oldHash == $newHash
+                && $lastChangeTime <= time() - 60) { //数据未变更，减少io操作
+                return false;
+            }
         }
         return file_put_contents($dir . $this->id, $str, LOCK_EX);
     }
