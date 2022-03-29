@@ -9,7 +9,7 @@ SpringPHP is my first framework and also the precipitation of my own technology.
 # TODO
 - [x] MVC
 - [x] Custom routing
-- [x] Support file session
+- [x] Support for file-based session components
 - [x] RPC、WebSocket RPC
 - [x] Timed task
 - [x] Support Socket, WebSocket, HTTP
