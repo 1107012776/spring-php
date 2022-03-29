@@ -31,7 +31,7 @@ class FileSession implements SessionInter
     public function getSessionId()
     {
         if (empty($this->id)) {
-            $this->id = uniqid('session_', true) . md5(getmypid());
+            $this->id = uniqid('session_' . mt_rand(1000, 9999), true) . md5('sp:' . getmypid());
         }
         return $this->id;
     }
