@@ -30,7 +30,8 @@ class FileDirUtil
      * 建立文件夹
      *
      * @param string $aimUrl
-     * @return  viod
+     * @param int $mode
+     * @return  void
      */
     function createDir($aimUrl, $mode = 0777)
     {
@@ -116,9 +117,9 @@ class FileDirUtil
         if (!file_exists($fileUrl)) {
             return false;
         }
-        if (file_exists($aimUrl) && $overWrite = false) {
+        if (file_exists($aimUrl) && $overWrite == false) {
             return false;
-        } elseif (file_exists($aimUrl) && $overWrite = true) {
+        } elseif (file_exists($aimUrl) && $overWrite == true) {
             $this->unlinkFile($aimUrl);
         }
         $aimDir = dirname($aimUrl);

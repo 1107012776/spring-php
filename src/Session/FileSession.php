@@ -16,6 +16,7 @@ class FileSession implements SessionInter
     protected $path = '';
     protected $maxAge = '';
     protected $isOpen = false;
+    protected $oldHash = '';
 
     public function __construct($id = '')
     {
@@ -64,6 +65,7 @@ class FileSession implements SessionInter
             return $this->id;
         }
         $content = file_get_contents($dir . $this->id);
+        $this->oldHash = sha1($content) . '_' . md5($content);
         $this->data = json_decode($content, true);
         empty($this->data) && $this->data = [];
         return $this->id;
@@ -99,6 +101,13 @@ class FileSession implements SessionInter
             return false;
         }
         $str = json_encode($this->data, JSON_UNESCAPED_UNICODE);
+        $newHash = sha1($str) . '_' . md5($str);
+        $filectime = @filectime($dir . $this->id);
+        if ($filectime !== false
+            && !empty($this->oldHash) && $this->oldHash == $newHash
+            && $filectime <= time() - 60) { //数据未变更，减少io操作
+            return false;
+        }
         return file_put_contents($dir . $this->id, $str, LOCK_EX);
     }
 
