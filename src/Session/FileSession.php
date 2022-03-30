@@ -28,10 +28,24 @@ class FileSession implements SessionInter
         return $this->isOpen;
     }
 
+    protected function getSessionDir()
+    {
+        $runtime_path = SpringContext::config('settings.runtime_path');
+        $dir = $runtime_path . '/Session/';
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        return $dir;
+    }
+
     public function getSessionId()
     {
         if (empty($this->id)) {
-            $this->id = uniqid('session_' . mt_rand(1000, 9999), true) . md5('sp:' . getmypid());
+            createId:
+            $this->id = uniqid('session_' . mt_rand(1000, 9999), true) . md5('sp:' . getmypid() . '_' . mt_rand(1000, 9999));
+            if (file_exists($this->getSessionDir() . $this->id)) {
+                goto createId;
+            }
         }
         return $this->id;
     }
@@ -55,11 +69,7 @@ class FileSession implements SessionInter
     {
         $this->isOpen = true;
         $this->getSessionId();
-        $runtime_path = SpringContext::config('settings.runtime_path');
-        $dir = $runtime_path . '/Session/';
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
-        }
+        $dir = $this->getSessionDir();
         if (!file_exists($dir . $this->id)) {
             empty($this->data) && $this->data = [];
             return $this->id;
@@ -92,11 +102,10 @@ class FileSession implements SessionInter
         if (!$this->isOpen) {
             return false;
         }
-        $runtime_path = SpringContext::config('settings.runtime_path');
         if (!is_array($this->data)) {
             return false;
         }
-        $dir = $runtime_path . '/Session/';
+        $dir = $this->getSessionDir();
         if (empty($this->data)
             && !file_exists($dir . $this->id)
         ) {  //数据为空文件又不存在，无需创建session文件
@@ -164,8 +173,7 @@ class FileSession implements SessionInter
 
     public function gc($timeout = 3600)
     {
-        $runtime_path = SpringContext::config('settings.runtime_path');
-        $dir = $runtime_path . '/Session/';
+        $dir = $this->getSessionDir();
         $fileUtil = new FileDirUtil();
         $list = $fileUtil->dirList($dir);
         foreach ($list as $item) {
