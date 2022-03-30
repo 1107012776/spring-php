@@ -29,6 +29,7 @@ class Crontab
             return false;
         }
         $this->startTime = time();
+        $this->count = SpringContext::config('servers.' . $config['index'] . '.crontab.count', 1);
         $list = $this->__generateWorkerProcess($config);
         foreach ($list as $p) {
             $server->addProcess($p);
@@ -47,15 +48,17 @@ class Crontab
         }
         $this->startTime = time();
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
-        file_put_contents($file, date('Y-m-d H:i:s', time()) . PHP_EOL);
+        for ($i = 1; $i <= $this->count; $i++) {
+            $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . '-' . $i . "-timer-restart.log";
+            file_put_contents($file, date('Y-m-d H:i:s', time()) . PHP_EOL);
+        }
         return true;
     }
 
-    public function getRestartFile()
+    public function getRestartFile($i = 1)
     {
         $runtime_path = SpringContext::config('settings.runtime_path');
-        $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . "-timer-restart.log";
+        $file = $runtime_path . "/spring-php-swoole-" . $this->config['index'] . '-' . $i . "-timer-restart.log";
         return $file;
     }
 
@@ -70,8 +73,13 @@ class Crontab
                 \SpringPHP\Component\SimpleAutoload::add([
                     'App' => SPRINGPHP_ROOT . '/App'
                 ]);
-                $funcCallback = function () {
-                    $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
+                $funcCallback = function () use ($i) {
+                    if ($this->count > 1) {
+                        $allList = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
+                        $list = isset($allList[$i - 1][0]) ? $allList[$i - 1] : [];  //兼容多个定时进程
+                    } else {
+                        $list = SpringContext::config('servers.' . $this->config['index'] . '.crontab.list', []);
+                    }
                     $timerArr = [];
                     foreach ($list as $index => $item) {
                         $list[$index]['nextExecTime'] = date('Y-m-d H:i:s', time());
@@ -95,8 +103,8 @@ class Crontab
                         });
                         $timerArr[$timer_id] = $timer_id;
                     }
-                    $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id) {
-                        $file = $this->getRestartFile();
+                    $timer_id = \Swoole\Timer::tick(1000, function ($timer) use ($timerArr, &$timer_id, $i) {
+                        $file = $this->getRestartFile($i);
                         if (file_exists($file)) {
                             unlink($file);
                             foreach ($timerArr as $value) {
