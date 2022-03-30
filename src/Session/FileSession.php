@@ -64,9 +64,11 @@ class FileSession implements SessionInter
             empty($this->data) && $this->data = [];
             return $this->id;
         }
-        $content = file_get_contents($dir . $this->id);
-        $this->oldHash = sha1($content) . '_' . md5($content);
-        $this->data = json_decode($content, true);
+        $content = @file_get_contents($dir . $this->id);
+        if (!empty($content)) {
+            $this->oldHash = sha1($content) . '_' . md5($content);
+            $this->data = json_decode($content, true);
+        }
         empty($this->data) && $this->data = [];
         return $this->id;
     }
