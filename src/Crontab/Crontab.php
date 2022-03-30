@@ -18,7 +18,7 @@ class Crontab
 {
     use Singleton;
     private $config; //serverConfig
-    private $count = 1; //强制只有一个定时任务进程，多个暂时不支持
+    private $count = 1; //定时任务进程数量
     private $startTime = 0;
 
     function attachServer(Server $server, $config = [])
