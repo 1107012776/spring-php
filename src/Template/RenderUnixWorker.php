@@ -48,9 +48,6 @@ class RenderUnixWorker
     }
 
 
-    /**
-     * 运行多进程模式
-     */
     public function run()
     {
         @cli_set_process_title('spring-php RenderWorker unix master process pid=' . posix_getpid());

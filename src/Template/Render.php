@@ -177,7 +177,7 @@ class Render
         if (empty($retval)) {
             return $str;
         }
-        $n = $socket->send(serialize($requestData));
+        $n = $socket->send(Protocol::pack(serialize($requestData)));
         if (empty($n)) {
             return $str;
         }
@@ -226,7 +226,7 @@ class Render
         if (empty($retval)) {
             return $str;
         }
-        $n = $socket->send(serialize($requestData));
+        $n = $socket->send(Protocol::pack(serialize($requestData)));
         if (empty($n)) {
             return $str;
         }

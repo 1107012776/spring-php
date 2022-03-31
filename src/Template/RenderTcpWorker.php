@@ -10,6 +10,7 @@
 namespace SpringPHP\Template;
 
 
+use SpringPHP\Component\Protocol;
 use Swoole\Coroutine;
 
 class RenderTcpWorker
@@ -63,9 +64,6 @@ class RenderTcpWorker
     }
 
 
-    /**
-     * 运行多进程模式
-     */
     public function run()
     {
         @cli_set_process_title('spring-php RenderWorker master process pid=' . posix_getpid());
@@ -106,7 +104,13 @@ class RenderTcpWorker
                     self::$allSockets[(int)$new_socket] = $new_socket;
                 } else {
                     Render::getInstance()->controlAccept(function () use ($socket) {
-                        $string = fread($socket, 20480);
+                        $header = fread($socket, 4);
+                        if (strlen($header) != 4) {
+                            $this->closeSocket($socket);
+                            return;
+                        }
+                        $allLength = Protocol::packDataLength($header);
+                        $string = fread($socket, $allLength);
                         if ($string === '' || $string === false) {  //客户端已经退出了
                             $this->closeSocket($socket);
                             return;
