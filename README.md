@@ -1,8 +1,10 @@
 # SpringPHP - 高性能 Swoole 框架
 
 SpringPHP is a high-performance framework based on Swoole.
+
 # Official website (Under construction)
-<a target="_blank" href="https://bbs.what.pub">https://bbs.what.pub</a>
+
+https://bbs.what.pub
 
 # About Project
 
