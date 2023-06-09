@@ -20,6 +20,7 @@ use SpringPHP\Request\RequestSocket;
 class SocketResponse
 {
     use \SpringPHP\Rpc\JsonRpcResponseTrait;
+
     protected $http_code = 200;
     protected $reason;
     protected $data;

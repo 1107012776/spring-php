@@ -17,6 +17,7 @@ use Swoole\Server;
 class Crontab
 {
     use Singleton;
+
     private $config; //serverConfig
     private $count = 1; //定时任务进程数量
     private $startTime = 0;

@@ -54,4 +54,6 @@ interface RequestInter
      * @return string
      */
     public function method();
+
+    public function getClientIp();
 }

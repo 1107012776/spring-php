@@ -15,6 +15,7 @@ use SpringPHP\Server\Server;
 class ManagerServer
 {
     use Singleton;
+
     /**
      * @var array $serverConfig
      */

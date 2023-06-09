@@ -20,6 +20,7 @@ class RequestHttp implements RequestInter
      * @var \Swoole\Http\Request
      */
     protected $request;
+    protected $fd;
 
     /**
      * @var \Swoole\Process $process
@@ -35,6 +36,7 @@ class RequestHttp implements RequestInter
     )
     {
         $this->request = $request;
+        $this->fd = $request->fd;
         $this->process = $process;
 
     }
@@ -158,5 +160,31 @@ class RequestHttp implements RequestInter
         }
         return $this->request->cookie;
     }
+
+    public function getClientInfo()
+    {
+        $client_info = $this->managerServer()->getClientInfo($this->fd);
+        return $client_info;
+    }
+
+    public function getClientServer()
+    {
+        return $this->request->server;
+    }
+
+    public function getClientIp()
+    {
+        // 获取客户端连接信息
+        $client_info = $this->request->server->getClientInfo($this->fd);
+//        return [$client_info,$this->request->server,$this->header()];
+        if (empty($client_info['remote_ip'])) {
+            return false;
+        }
+        //头部里面的 "x-real-ip":"120.36.152.6","x-forwarded-for":"120.36.152.6"
+        // 获取客户端 IP 地址
+        $client_ip = $client_info['remote_ip'];
+        return $client_ip;
+    }
+
 
 }

@@ -181,5 +181,16 @@ class RequestSocket implements RequestInter
         return '';
     }
 
+    public function getClientIp()
+    {
+        // 获取客户端连接信息
+        $client_info = $this->managerServer()->getClientInfo($this->fd);
+        if (empty($client_info['remote_ip'])) {
+            return false;
+        }
+        // 获取客户端 IP 地址
+        $client_ip = $client_info['remote_ip'];
+        return $client_ip;
+    }
 
 }

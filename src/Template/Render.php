@@ -24,6 +24,7 @@ use SpringPHP\Component\Protocol;
 class Render
 {
     use Singleton;
+
     private $socketType = self::SOCKET_UNIX;
     private $isOpenWork = false;
     private $count = 2;

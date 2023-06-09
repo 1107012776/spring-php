@@ -17,17 +17,18 @@ class RequestWebSocket implements RequestInter
 {
     protected $request;
     protected $process;
+    protected $fd;
 
     protected $params = [];
     protected $data = [];
 
     public function __construct(
-        $frame,
+        \Swoole\Websocket\Frame $frame,
         \Swoole\Process $process = null
     )
     {
         $this->request = $frame;
-
+        $this->fd = $frame->fd;
         $this->process = $process;
 
         $this->data = json_decode($frame->data, true);
@@ -137,6 +138,18 @@ class RequestWebSocket implements RequestInter
     public function method()
     {
         return isset($this->data['method']) ? $this->data['method'] : 'GET';
+    }
+
+    public function getClientIp()
+    {
+        // 获取客户端连接信息
+        $client_info = $this->managerServer()->getClientInfo($this->fd);
+        if (empty($client_info['remote_ip'])) {
+            return false;
+        }
+        // 获取客户端 IP 地址
+        $client_ip = $client_info['remote_ip'];
+        return $client_ip;
     }
 
 }
