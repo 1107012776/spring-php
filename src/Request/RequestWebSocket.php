@@ -18,15 +18,21 @@ class RequestWebSocket implements RequestInter
     protected $request;
     protected $process;
     protected $fd;
+    /**
+     * @var \Swoole\Server
+     */
+    protected $ws;
 
     protected $params = [];
     protected $data = [];
 
     public function __construct(
         \Swoole\Websocket\Frame $frame,
-        \Swoole\Process $process = null
+        \Swoole\Process $process = null,
+        \Swoole\Server $ws = null
     )
     {
+        $this->ws = $ws;
         $this->request = $frame;
         $this->fd = $frame->fd;
         $this->process = $process;
@@ -142,8 +148,13 @@ class RequestWebSocket implements RequestInter
 
     public function getClientIp()
     {
+        if (property_exists($this->ws, 'client_ips')) {
+            if (!empty($this->ws->client_ips[$this->fd])) {
+                return $this->ws->client_ips[$this->fd];
+            }
+        }
         // 获取客户端连接信息
-        $client_info = $this->managerServer()->getClientInfo($this->fd);
+        $client_info = $this->ws->getClientInfo($this->fd);
         if (empty($client_info['remote_ip'])) {
             return false;
         }

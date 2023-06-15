@@ -50,11 +50,20 @@ class WebSocketServer extends Server implements ServerInter
                 'open_tcp_nodelay' => $this->getSettingsConfig('settings.open_tcp_nodelay', true),
                 'task_worker_num' => $this->getSettingsConfig('settings.task_worker_num', 0),
                 'task_enable_coroutine' => $this->getSettingsConfig('settings.task_enable_coroutine', false),
+                'http_compression' => $this->getSettingsConfig('settings.http_compression', true), // 开启 HTTP 压缩，自动读取 X-Real-IP 头信息
             ]
         );
         //监听WebSocket连接打开事件
         $ws->on('Open', function (\Swoole\Server $ws, \Swoole\Http\Request $request) {
             $this->fds[(int)$request->fd] = $request->fd;
+            // 获取客户端 IP 地址
+            $client_ip = $request->header['x-real-ip'] ?? $request->server['remote_addr'];
+            if (!isset($ws->client_ips) || empty($ws->client_ips)) {
+                $ws->client_ips = [];
+                $ws->client_ips[(int)$request->fd] = $client_ip;
+            } else {
+                $ws->client_ips[(int)$request->fd] = $client_ip;
+            }
             $ws->push($request->fd, json_encode([
                 'code' => 200,
                 'msg' => 'success'
@@ -68,7 +77,7 @@ class WebSocketServer extends Server implements ServerInter
 //监听WebSocket消息事件
         $ws->on('Message', function (\Swoole\Server $ws, \Swoole\Websocket\Frame $frame) {
             try {
-                $result = Dispatcher::init(new RequestWebSocket($frame, $this->swoole_process), new SocketResponse());
+                $result = Dispatcher::init(new RequestWebSocket($frame, $this->swoole_process, $ws), new SocketResponse());
                 $ws->push($frame->fd, $result);
             } catch (\Exception $e) {
                 echo var_export($e, true) . PHP_EOL;
@@ -78,13 +87,20 @@ class WebSocketServer extends Server implements ServerInter
 
 //监听WebSocket连接关闭事件
         $ws->on('Close', function ($ws, $fd) {
-            unset($this->fds[(int)$fd]);
             if ($this->getSettingsConfig('settings.debug', false) == true) {
-                echo "client-{$fd} is closed\n";
+                echo "client-{$fd} is closed" . PHP_EOL;
             }
             $event = SpringContext::config('servers.' . $this->config['index'] . '.event_close', null);
-            if (is_callable($event)) {
-                return $event($ws, $fd);
+            try {
+                if (is_callable($event)) {
+                    $event($ws, $fd);
+                }
+            } catch (\Exception $e) {
+                echo $e->getTraceAsString() . PHP_EOL;
+            }
+            unset($this->fds[(int)$fd]);
+            if (isset($ws->client_ips[(int)$fd])) {
+                unset($ws->client_ips[(int)$fd]);
             }
         });
 
