@@ -53,6 +53,23 @@ class WebSocketServer extends Server implements ServerInter
                 'http_compression' => $this->getSettingsConfig('settings.http_compression', true), // 针对 Swoole\Http\Response 对象的配置，启用压缩。默认为开启。
             ]
         );
+
+        if (empty($this->startFdsTimer)) {
+            $this->startFdsTimer = true;
+            \Swoole\Timer::tick(60 * 1000, function ($timer) use ($ws) {
+                foreach ($this->fds as $fd) {
+                    if (!$ws->exist($fd)) {
+                        unset($this->fds[(int)$fd]);
+                        \Swoole\Timer::after(300 * 1000, function ($timer) use ($ws, $fd) {  //延迟删除
+                            if (isset($ws->client_ips) && isset($ws->client_ips[(int)$fd])) {
+                                unset($ws->client_ips[(int)$fd]);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
         //监听WebSocket连接打开事件
         $ws->on('Open', function (\Swoole\Server $ws, \Swoole\Http\Request $request) {
             $this->fds[(int)$request->fd] = $request->fd;

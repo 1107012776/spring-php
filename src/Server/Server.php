@@ -21,6 +21,7 @@ class Server
     public $port;
     public $host;
     public $fds = [];
+    public $startFdsTimer = false;
     const SERVER_HTTP = 1;  //http
     const SERVER_WEBSOCKET = 2;  //webSocket
     const SERVER_SOCKET = 3;  //普通tcp socket

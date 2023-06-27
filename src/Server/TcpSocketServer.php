@@ -49,9 +49,19 @@ class TcpSocketServer extends Server implements ServerInter
 
             ]
         );
-
+        if (empty($this->startFdsTimer)) {
+            $this->startFdsTimer = true;
+            \Swoole\Timer::tick(60 * 1000, function ($timer) use ($server) {
+                foreach ($this->fds as $fd) {
+                    if (!$server->exist($fd)) {
+                        unset($this->fds[(int)$fd]);
+                    }
+                }
+            });
+        }
         //监听连接进入事件
-        $server->on('Connect', function ($server, $fd) {
+        $server->on('Connect', function (\Swoole\Server $server, $fd) {
+
             $this->fds[(int)$fd] = $fd;
             if ($this->getSettingsConfig('settings.debug', false) == true) {
                 echo "Client: Connect." . (int)$fd . "\n";
