@@ -41,7 +41,7 @@ class HttpServer extends Server implements ServerInter
             'enable_static_handler' => $this->getSettingsConfig('settings.enable_static_handler', false), //是否允许启动静态处理,如果存在会直接发送文件内容给客户端，不再触发onRequest回调
             'document_root' => $this->getSettingsConfig('settings.document_root', ''),  //静态资源根目录
         ];
-        $httpConfig['http_compression'] = $this->getSettingsConfig('settings.http_compression', true); // 开启 HTTP 压缩，自动读取 X-Real-IP 头信息
+        $httpConfig['http_compression'] = $this->getSettingsConfig('settings.http_compression', true); // 针对 Swoole\Http\Response 对象的配置，启用压缩。默认为开启。
         $http->set(
             $httpConfig
         );

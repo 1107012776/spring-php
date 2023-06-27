@@ -50,7 +50,7 @@ class WebSocketServer extends Server implements ServerInter
                 'open_tcp_nodelay' => $this->getSettingsConfig('settings.open_tcp_nodelay', true),
                 'task_worker_num' => $this->getSettingsConfig('settings.task_worker_num', 0),
                 'task_enable_coroutine' => $this->getSettingsConfig('settings.task_enable_coroutine', false),
-                'http_compression' => $this->getSettingsConfig('settings.http_compression', true), // 开启 HTTP 压缩，自动读取 X-Real-IP 头信息
+                'http_compression' => $this->getSettingsConfig('settings.http_compression', true), // 针对 Swoole\Http\Response 对象的配置，启用压缩。默认为开启。
             ]
         );
         //监听WebSocket连接打开事件
