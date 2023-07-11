@@ -40,6 +40,8 @@ class RequestSocket implements RequestInter
         $arr = json_decode($data, true);
         $this->data = is_array($arr) ? $arr : $data;
         $this->fd = $fd;
+        SpringContext::$app->set('fd', $this->fd);
+        SpringContext::$app->set('client_ip', $this->getClientIp());
         if (isset($this->data['jsonrpc']) && $this->data['jsonrpc'] == '2.0') {
             $this->isJsonrpc = true;
         }

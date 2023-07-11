@@ -54,21 +54,6 @@ class WebSocketServer extends Server implements ServerInter
             ]
         );
 
-        if (empty($this->startFdsTimer)) {
-            $this->startFdsTimer = true;
-            \Swoole\Timer::tick(60 * 1000, function ($timer) use ($ws) {
-                foreach ($this->fds as $fd) {
-                    if (!$ws->exist($fd)) {
-                        unset($this->fds[(int)$fd]);
-                        \Swoole\Timer::after(300 * 1000, function ($timer) use ($ws, $fd) {  //延迟删除
-                            if (isset($ws->client_ips) && isset($ws->client_ips[(int)$fd])) {
-                                unset($ws->client_ips[(int)$fd]);
-                            }
-                        });
-                    }
-                }
-            });
-        }
 
         //监听WebSocket连接打开事件
         $ws->on('Open', function (\Swoole\Server $ws, \Swoole\Http\Request $request) {
@@ -81,6 +66,8 @@ class WebSocketServer extends Server implements ServerInter
             } else {
                 $ws->client_ips[(int)$request->fd] = $client_ip;
             }
+            SpringContext::$app->set('fd', $request->fd);
+            SpringContext::$app->set('client_ip', isset($ws->client_ips[(int)$request->fd]) ? $ws->client_ips[(int)$request->fd] : '127.0.0.1');
             $ws->push($request->fd, json_encode([
                 'code' => 200,
                 'msg' => 'success'
@@ -102,10 +89,12 @@ class WebSocketServer extends Server implements ServerInter
             }
         });
 
-//监听WebSocket连接关闭事件
+        //监听WebSocket连接关闭事件
         $ws->on('Close', function ($ws, $fd) {
+            SpringContext::$app->set('fd', $fd);
+            SpringContext::$app->set('client_ip', isset($ws->client_ips[(int)$fd]) ? $ws->client_ips[(int)$fd] : '127.0.0.1');
             if ($this->getSettingsConfig('settings.debug', false) == true) {
-                echo "client-{$fd} is closed" . PHP_EOL;
+                echo "client-{$fd} is closed" . " client_ip=" . SpringContext::$app->get('client_ip') . PHP_EOL;
             }
             $event = SpringContext::config('servers.' . $this->config['index'] . '.event_close', null);
             try {
@@ -118,6 +107,33 @@ class WebSocketServer extends Server implements ServerInter
             unset($this->fds[(int)$fd]);
             if (isset($ws->client_ips[(int)$fd])) {
                 unset($ws->client_ips[(int)$fd]);
+            }
+            if (empty($this->startFdsTimer)) {
+                $this->startFdsTimer = true;
+                \Swoole\Timer::after(10 * 1000, function () use ($ws) {
+                    if ($this->getSettingsConfig('settings.debug', false) == true) {
+                        echo 'fds and client_ips = ' . var_export([$this->fds, $ws->client_ips], true) . __CLASS__ . PHP_EOL;
+                    }
+                    try {
+                        foreach ($this->fds as $fd) {
+                            if (!$ws->isEstablished($fd)) {
+                                if ($this->getSettingsConfig('settings.debug', false) == true) {
+                                    echo 'unset fd ' . __CLASS__ . PHP_EOL;
+                                }
+                                unset($this->fds[(int)$fd]);
+                                if (isset($ws->client_ips) && isset($ws->client_ips[(int)$fd])) {
+                                    if ($this->getSettingsConfig('settings.debug', false) == true) {
+                                        echo 'unset client_ip ' . __CLASS__ . PHP_EOL;
+                                    }
+                                    unset($ws->client_ips[(int)$fd]);
+                                }
+                            }
+                        }
+                    } catch (\Exception $e) {
+
+                    }
+                    $this->startFdsTimer = false;
+                });
             }
         });
 

@@ -36,8 +36,9 @@ class RequestWebSocket implements RequestInter
         $this->request = $frame;
         $this->fd = $frame->fd;
         $this->process = $process;
-
         $this->data = json_decode($frame->data, true);
+        SpringContext::$app->set('fd', $this->fd);
+        SpringContext::$app->set('client_ip', $this->getClientIp());
     }
 
     public function getFd()

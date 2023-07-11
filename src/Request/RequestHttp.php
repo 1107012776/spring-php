@@ -38,7 +38,8 @@ class RequestHttp implements RequestInter
         $this->request = $request;
         $this->fd = $request->fd;
         $this->process = $process;
-
+        SpringContext::$app->set('fd', $this->fd);
+        SpringContext::$app->set('client_ip', $this->getClientIp());
     }
 
     /**
