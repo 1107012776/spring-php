@@ -112,7 +112,7 @@ class FileSession implements SessionInter
             return false;
         }
         $str = json_encode($this->data, JSON_UNESCAPED_UNICODE);
-        $lastChangeTime = @filectime($dir . $this->id);
+        $lastChangeTime = @filemtime($dir . $this->id);
         if ($lastChangeTime !== false) {
             $newHash = sha1($str) . '_' . md5($str);
             if (!empty($this->oldHash)
@@ -177,7 +177,7 @@ class FileSession implements SessionInter
         $fileUtil = new FileDirUtil();
         $list = $fileUtil->dirList($dir);
         foreach ($list as $item) {
-            if (@filectime($item) <= time() - $timeout) {
+            if (@filemtime($item) <= time() - $timeout) {
                 @unlink($item);
             }
         }
